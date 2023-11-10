@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:navermaptest01/Owner.dart';
+import 'package:navermaptest01/OwnerChoiceBuilding.dart';
 import 'package:navermaptest01/visitor.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
@@ -94,7 +94,7 @@ class FirstPage extends StatelessWidget {
                   ),
                   OutlinedButton(onPressed: (){
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => const Owner(),
+                      MaterialPageRoute(builder: (BuildContext context) => const OwnerChoiceBuilding(),
                         ),
                       );
                     }, child: const Column(

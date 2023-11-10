@@ -52,6 +52,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 1;
                                     });
                                     log("1", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -61,6 +62,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 2;
                                     });
                                     log("2", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -70,6 +72,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 3;
                                     });
                                     log("3", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -79,6 +82,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 4;
                                     });
                                     log("4", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -88,6 +92,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 5;
                                     });
                                     log("5", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -97,6 +102,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 6;
                                     });
                                     log("6", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -106,6 +112,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 7;
                                     });
                                     log("7", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -115,6 +122,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 8;
                                     });
                                     log("8", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -124,6 +132,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 9;
                                     });
                                     log("9", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -133,6 +142,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 10;
                                     });
                                     log("10", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -142,6 +152,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 11;
                                     });
                                     log("11", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -151,6 +162,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 12;
                                     });
                                     log("12", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                                   ListTile(
@@ -160,6 +172,7 @@ class _OwnerState extends State<Owner> {
                                       selectedFloor = 13;
                                     });
                                     log("13", name : "check");
+                                    Navigator.pop(context);
                                     },
                                   ),
                               ],
@@ -214,27 +227,31 @@ class _OwnerState extends State<Owner> {
               ),
             ]
           ),
-          bottomNavigationBar: Padding(padding: const EdgeInsets.all(8.0),
-          child: TextButton(onPressed: ()
-          {
-          //버튼을 누르면 selecteFloor변수랑 _image 변수를 파이어베이스에 저장하면될듯??
-          //selectedFloor변수는 층, _image 변수는 이미지
-            log("업로드하기 버튼 클릭" ,name: "upload");
-          }, 
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text("업로드 하기",style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 49, 49, 49),),
-                    ),
-                SizedBox(
-                  width: 20,
-                ),
-                Icon(Icons.upload_file, size: 25,color: Color.fromARGB(255, 49, 49, 49),
-                ),
-              ],
-            )
+          bottomNavigationBar: OutlinedButton(onPressed: (){
+            if (_image == null && selectedFloor == 0) {
+              log("이미지와 층을 선택해주세요");
+              //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            }
+            else if(_image == null) {
+              log("이미지를 선택해주세요");
+              //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            }
+            else if(selectedFloor == 0) {
+              log("층을 선택해주세요");
+              //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            }
+            else {
+              //파이어베이스 연결필요
+              log("업로드 하기 버튼 클릭");
+            }
+            }, child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('업로드 하기\t', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 49, 49, 49))),
+                  Icon(Icons.upload_file_outlined, color: Color.fromARGB(255, 49, 49, 49), size: 20),
+                ],
+            ),
           ),
-        ),
       )
     );
   }
