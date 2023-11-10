@@ -11,20 +11,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() async {
   await _initialize();
-  Position currentPosition = await fetchData(); //앱이 실행될때 위치 정보를 미리 가져와야함
-  //버튼 누를때 호출하고 전달하니까 딜레이 생겨서 수정함 
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
-  runApp(MyApp(currentPosition: currentPosition));
-}
-
-Future<Position> fetchData() async {
-  Position currentPosition = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.high
-  );
-
-  log("${currentPosition.latitude}", name: "hello");
-  log("${currentPosition.longitude}", name: "hello");
-  return currentPosition;
+  runApp(MyApp());
 }
 
 Future<void> _initialize() async {
@@ -36,22 +24,20 @@ Future<void> _initialize() async {
 }
 
 class MyApp extends StatelessWidget {
-  final Position currentPosition;
 
-  MyApp({Key? key, required this.currentPosition}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: FirstPage(currentPosition: currentPosition),
+      home: FirstPage(),
     );
   }
 }
 
 class FirstPage extends StatelessWidget {
-  final Position currentPosition;
 
-  FirstPage({Key? key, required this.currentPosition}) : super(key: key);
+  FirstPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +67,7 @@ class FirstPage extends StatelessWidget {
                   ),
                   OutlinedButton(onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => NaverMapApp(position: currentPosition),
+                      MaterialPageRoute(builder: (BuildContext context) => const NaverMapApp(),
                         ),
                       );
                     }, child: const Column(
