@@ -7,6 +7,8 @@ import 'package:navermaptest01/visitor.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 
+//TESTESTETETSTSETES
+
 void main() async {
   await _initialize();
   Position currentPosition = await fetchData(); //앱이 실행될때 위치 정보를 미리 가져와야함
