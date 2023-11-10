@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:navermaptest01/Owner.dart';
+import 'package:navermaptest01/OwnerChoiceBuilding.dart';
 import 'package:navermaptest01/visitor.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
@@ -130,12 +131,13 @@ class FirstPage extends StatelessWidget {
                     height: 1,
                     color: Color.fromARGB(255, 170, 170, 170),
                   ),
-                  const SizedBox(width: 47.5, height: 47.5),
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => const Owner(),
+                  const SizedBox(
+                    width: 47.5,
+                    height: 47.5
+                  ),
+                  OutlinedButton(onPressed: (){
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (BuildContext context) => const OwnerChoiceBuilding(),
                         ),
                       );
                     },
