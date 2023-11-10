@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:navermaptest01/Owner.dart';
 import 'package:navermaptest01/visitor.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -10,25 +9,9 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 
 void main() async {
   await _initialize();
-<<<<<<< Updated upstream
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
-  runApp(MyApp());
-=======
-  Position currentPosition = await fetchData(); //앱이 실행될때 위치 정보를 미리 가져와야함
-  //버튼 누를때 호출하고 전달하니까 딜레이 생겨서 수정함
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom]);
-  runApp(MyApp(currentPosition: currentPosition));
-}
-
-Future<Position> fetchData() async {
-  Position currentPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high);
-
-  log("${currentPosition.latitude}", name: "hello");
-  log("${currentPosition.longitude}", name: "hello");
-  return currentPosition;
->>>>>>> Stashed changes
+  runApp(const MyApp());
 }
 
 Future<void> _initialize() async {
@@ -39,28 +22,18 @@ Future<void> _initialize() async {
 }
 
 class MyApp extends StatelessWidget {
-
-<<<<<<< Updated upstream
-  MyApp({Key? key}) : super(key: key);
-=======
-  const MyApp({Key? key, required this.currentPosition}) : super(key: key);
->>>>>>> Stashed changes
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: FirstPage(),
     );
   }
 }
 
 class FirstPage extends StatelessWidget {
-
-<<<<<<< Updated upstream
-  FirstPage({Key? key}) : super(key: key);
-=======
-  const FirstPage({Key? key, required this.currentPosition}) : super(key: key);
->>>>>>> Stashed changes
+  const FirstPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +60,7 @@ class FirstPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        NaverMapApp(position: currentPosition),
+                    builder: (BuildContext context) => const NaverMapApp(),
                   ),
                 );
               },
@@ -123,67 +95,72 @@ class FirstPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-<<<<<<< Updated upstream
-                  const SizedBox(
-                    width: 50,
-                    height: 50
-                  ),
-                  OutlinedButton(onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => const NaverMapApp(),
+                  const SizedBox(width: 50, height: 50),
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const NaverMapApp(),
                         ),
                       );
-                    }, child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text('방문객', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 49, 49, 49))),
-                          Icon(Icons.people_alt_rounded, color: Color.fromARGB(255, 49, 49, 49), size: 150),
-                        ],
+                    },
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('방문객',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 49, 49, 49))),
+                        Icon(Icons.people_alt_rounded,
+                            color: Color.fromARGB(255, 49, 49, 49), size: 150),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    width: 47.5,
-                    height: 47.5
-                  ),
+                  const SizedBox(width: 47.5, height: 47.5),
                   const Divider(
-                    thickness: 1, height: 1, color: Color.fromARGB(255, 170, 170, 170),
+                    thickness: 1,
+                    height: 1,
+                    color: Color.fromARGB(255, 170, 170, 170),
                   ),
-                  const SizedBox(
-                    width: 47.5,
-                    height: 47.5
-                  ),
-                  OutlinedButton(onPressed: (){
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => const Owner(),
+                  const SizedBox(width: 47.5, height: 47.5),
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => const Owner(),
                         ),
                       );
-                    }, child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text('건물주', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 49, 49, 49))),
-                          Icon(Icons.business, color: Color.fromARGB(255, 49, 49, 49), size: 150),
-                        ],
+                    },
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text('건물주',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 49, 49, 49))),
+                        Icon(Icons.business,
+                            color: Color.fromARGB(255, 49, 49, 49), size: 150),
+                      ],
                     ),
-=======
-                  SizedBox(
-                    height: 10,
->>>>>>> Stashed changes
                   ),
-                  Text('건물주',
+                  const Text('건물주',
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 49, 49, 49))),
-                  Icon(Icons.business,
+                  const Icon(Icons.business,
                       color: Color.fromARGB(255, 49, 49, 49), size: 150),
                 ],
               ),

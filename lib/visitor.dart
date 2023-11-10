@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 
 class NaverMapApp extends StatelessWidget {
   const NaverMapApp({Key? key}) : super(key: key);
@@ -11,14 +11,11 @@ class NaverMapApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Completer<NaverMapController> mpaControllerCompleter = Completer();
-<<<<<<< Updated upstream
-=======
     final marker = NMarker(
         id: 'currentPosition',
-        position: NLatLng(position.latitude, position.longitude));
+        position: const NLatLng(37.50315317166826, 126.9556528096827));
     final onMarkerInfoWindow =
-        NInfoWindow.onMarker(id: marker.info.id, text: "건물정보API필요할듯");
->>>>>>> Stashed changes
+        NInfoWindow.onMarker(id: marker.info.id, text: "중앙대 310관");
     //NCircleOverlay(id: "currentPosition", center: NLatLng(position.latitude,position.longitude));
     return MaterialApp(
       home: Scaffold(
@@ -39,7 +36,6 @@ class NaverMapApp extends StatelessWidget {
             ),
             Expanded(
               child: NaverMap(
-<<<<<<< Updated upstream
                 options: const NaverMapViewOptions(
                   // initialCameraPosition: NCameraPosition(
                   //   target: NLatLng(marker.position.latitude,marker.position.longitude),
@@ -47,30 +43,16 @@ class NaverMapApp extends StatelessWidget {
                   //   bearing: 0,
                   //   tilt: 0,
                   // ),
-=======
-                options: NaverMapViewOptions(
-                  initialCameraPosition: NCameraPosition(
-                    target: NLatLng(
-                        marker.position.latitude, marker.position.longitude),
-                    zoom: 15,
-                    bearing: 0,
-                    tilt: 0,
-                  ),
->>>>>>> Stashed changes
                   rotationGesturesEnable: false,
                   indoorEnable: true,
-                  locationButtonEnable: false,
+                  locationButtonEnable: true,
                   consumeSymbolTapEvents: false,
                 ),
                 onMapReady: (controller) async {
                   mpaControllerCompleter.complete(controller);
-<<<<<<< Updated upstream
-                  log("네이버맵 준비완료!", name : "onMapReady");
-=======
                   log("네이버맵 준비완료!", name: "onMapReady");
                   controller.addOverlay(marker);
                   marker.openInfoWindow(onMarkerInfoWindow);
->>>>>>> Stashed changes
                 },
               ),
             ),
