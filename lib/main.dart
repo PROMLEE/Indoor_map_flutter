@@ -93,7 +93,7 @@ class FirstPage extends StatelessWidget {
                   ),
                   OutlinedButton(onPressed: (){
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => const OwnerChoiceBuilding(),
+                      MaterialPageRoute(builder: (BuildContext context) => OwnerChoiceBuilding(),
                         ),
                       );
                     }, child: const Column(

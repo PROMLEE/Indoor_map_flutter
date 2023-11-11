@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:navermaptest01/Owner.dart';
 
+
 class OwnerChoiceBuilding extends StatelessWidget {
-  const OwnerChoiceBuilding({Key? key}) : super(key: key);
+  OwnerChoiceBuilding({Key? key}) : super(key: key);
+
+  final Completer<NaverMapController> _mapControllerCompleter = Completer<NaverMapController>();
+  late NaverMapController _controller;
   
   @override
   Widget build(BuildContext context) {
-    final Completer<NaverMapController> mpaControllerCompleter = Completer();
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -31,21 +34,18 @@ class OwnerChoiceBuilding extends StatelessWidget {
             ),
             Expanded(
               child: NaverMap(
-                options: const NaverMapViewOptions(
-                  // initialCameraPosition: NCameraPosition(
-                  //   target: NLatLng(marker.position.latitude,marker.position.longitude),
-                  //   zoom: 15,
-                  //   bearing: 0,
-                  //   tilt: 0,
-                  // ),
-                  rotationGesturesEnable: false,
-                  indoorEnable: true,
-                  locationButtonEnable: false,
-                  consumeSymbolTapEvents: false,
-                ),
-                onMapReady: (controller) async {
-                  mpaControllerCompleter.complete(controller);
-                  log("건물주 네이버맵 준비완료!", name : "onMapReady");
+                onMapTapped: (NPoint point, NLatLng latLng) {
+                  log("${latLng.latitude}");
+                  log("${latLng.longitude}");
+                  final marker = NMarker(id: "test", position: latLng);
+                  final onMarkerInfoWindow = NInfoWindow.onMarker(id: marker.info.id, text: "좌표에 해당하는 건물 이름 가져오기");
+                  _controller.addOverlay(marker);
+                  marker.openInfoWindow(onMarkerInfoWindow);
+                },
+                onMapReady: (controller) {
+                  _mapControllerCompleter.complete(controller);
+                  _controller = controller;
+                  log("건물주 네이버맵 준비완료!", name: "onMapReady");
                 },
               ),
             ),

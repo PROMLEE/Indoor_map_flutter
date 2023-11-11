@@ -9,7 +9,7 @@ class NaverMapApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Completer<NaverMapController> mpaControllerCompleter = Completer();
+    final Completer<NaverMapController> mapControllerCompleter = Completer();
     final marker = NMarker(
         id: 'currentPosition',
         position: const NLatLng(37.50315317166826, 126.9556528096827));
@@ -47,7 +47,7 @@ class NaverMapApp extends StatelessWidget {
                   consumeSymbolTapEvents: false,
                 ),
                 onMapReady: (controller) async {
-                  mpaControllerCompleter.complete(controller);
+                  mapControllerCompleter.complete(controller);
                   log("방문객 네이버맵 준비완료!", name : "onMapReady");
                   controller.addOverlay(marker);
                   marker.openInfoWindow(onMarkerInfoWindow);
