@@ -1,18 +1,36 @@
 import 'dart:developer';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
 class Owner extends StatefulWidget {
-  const Owner({Key? key}) : super(key: key);
+  final String buildingName;
+  final int floorNumber;
+  const Owner({
+    Key? key,
+    required this.buildingName,
+    required this.floorNumber,
+  }) : super(key: key);
 
   @override
-  _OwnerState createState() => _OwnerState();
+  _OwnerState createState() =>
+      _OwnerState(buildingName: buildingName, floorNumber: floorNumber);
 }
 
 class _OwnerState extends State<Owner> {
   int selectedFloor = 0; // 선택된 층을 저장하는 변수
   File? _image; // 선택된 이미지를 저장하는 변수
+
+  final String buildingName;
+  final int floorNumber;
+
+  _OwnerState({
+    required this.buildingName,
+    required this.floorNumber,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +41,8 @@ class _OwnerState extends State<Owner> {
           children: [
             Container(
               margin: const EdgeInsets.all(30),
-              child: const Text("건물\n안내도.",
-                  style: TextStyle(
+              child: Text("$buildingName\n건물\n안내도.",
+                  style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 49, 49, 49),
@@ -42,143 +60,11 @@ class _OwnerState extends State<Owner> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                            content: SizedBox(
-                          width: double.maxFinite,
-                          child: ListView(
-                            children: <Widget>[
-                              ListTile(
-                                title: const Text("1층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 1;
-                                  });
-                                  log("1", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("2층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 2;
-                                  });
-                                  log("2", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("3층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 3;
-                                  });
-                                  log("3", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("4층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 4;
-                                  });
-                                  log("4", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("5층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 5;
-                                  });
-                                  log("5", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("6층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 6;
-                                  });
-                                  log("6", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("7층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 7;
-                                  });
-                                  log("7", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("8층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 8;
-                                  });
-                                  log("8", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("9층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 9;
-                                  });
-                                  log("9", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("10층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 10;
-                                  });
-                                  log("10", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("11층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 11;
-                                  });
-                                  log("11", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("12층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 12;
-                                  });
-                                  log("12", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              ListTile(
-                                title: const Text("13층"),
-                                onTap: () {
-                                  setState(() {
-                                    selectedFloor = 13;
-                                  });
-                                  log("13", name: "check");
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
+                          content: SizedBox(
+                            width: double.maxFinite,
+                            child: createFloorList(),
                           ),
-                        ));
+                        );
                       });
                 },
                 style: ElevatedButton.styleFrom(
@@ -250,14 +136,23 @@ class _OwnerState extends State<Owner> {
       bottomNavigationBar: OutlinedButton(
         onPressed: () {
           if (_image == null && selectedFloor == 0) {
-            log("이미지와 층을 선택해주세요");
-            //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            Fluttertoast.showToast(
+              msg: "이미지와 층을 선택해주세요",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
           } else if (_image == null) {
-            log("이미지를 선택해주세요");
-            //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            Fluttertoast.showToast(
+              msg: "이미지를 선택해주세요",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
           } else if (selectedFloor == 0) {
-            log("층을 선택해주세요");
-            //안드로이드 스튜디오 처럼 플러터가 ToastMessage가 있는지 모르겠음 있으면 토스트메시지로 보내주면될듯
+            Fluttertoast.showToast(
+              msg: "층을 선택해주세요",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
           } else {
             //파이어베이스 연결필요
             log("업로드 하기 버튼 클릭");
@@ -277,5 +172,24 @@ class _OwnerState extends State<Owner> {
         ),
       ),
     ));
+  }
+
+  Widget createFloorList() {
+    List<Widget> floorList = [];
+    for (int i = 1; i <= floorNumber; i++) {
+      floorList.add(
+        ListTile(
+          title: Text("$i층"),
+          onTap: () {
+            setState(() {
+              selectedFloor = i;
+            });
+            log("$i", name: "check");
+            Navigator.pop(context);
+          },
+        ),
+      );
+    }
+    return ListView(children: floorList);
   }
 }
