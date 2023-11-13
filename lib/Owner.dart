@@ -9,12 +9,14 @@ class Owner extends StatefulWidget {
   final String buildingName;
   final int floorNumber;
   final NLatLng nMarkerPosition;
+  final int? basementNumber;
 
   const Owner({
     Key? key,
     required this.buildingName,
     required this.floorNumber,
     required this.nMarkerPosition,
+    this.basementNumber,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class Owner extends StatefulWidget {
         buildingName: buildingName,
         floorNumber: floorNumber,
         nMarkerPosition: nMarkerPosition,
+        basementNumber: basementNumber,
       );
 }
 
@@ -32,11 +35,13 @@ class _OwnerState extends State<Owner> {
   final String buildingName;
   final int floorNumber;
   final NLatLng nMarkerPosition;
+  final int? basementNumber;
 
   _OwnerState({
     required this.buildingName,
     required this.floorNumber,
     required this.nMarkerPosition,
+    this.basementNumber,
   });
 
   @override
@@ -77,7 +82,7 @@ class _OwnerState extends State<Owner> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                     foregroundColor: const Color.fromARGB(255, 49, 49, 49)),
-                child: Text("$selectedFloor층",
+                child: Text("${selectedFloor.toString().replaceAll('-', 'B')}층",
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -183,19 +188,51 @@ class _OwnerState extends State<Owner> {
 
   Widget createFloorList() {
     List<Widget> floorList = [];
-    for (int i = 1; i <= floorNumber; i++) {
-      floorList.add(
-        ListTile(
-          title: Text("$i층"),
+
+    if (basementNumber == null) {
+      //지하가 없는 건물
+      for (int i = 1; i <= floorNumber; i++) {
+        floorList.add(
+          ListTile(
+            title: Text("$i층"),
+            onTap: () {
+              setState(() {
+                selectedFloor = i;
+              });
+              log("$i", name: "check");
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
+    } else if (basementNumber != null) {
+      //null이 아니면 값이 전달받아진거니까 지하가 있는 건물
+      for (int i = 1; i <= basementNumber!; i++) {
+        floorList.add(ListTile(
+          title: Text("B$i층"),
           onTap: () {
             setState(() {
-              selectedFloor = i;
+              selectedFloor = -i;
             });
-            log("$i", name: "check");
+            log("-$i", name: "check");
             Navigator.pop(context);
           },
-        ),
-      );
+        ));
+      }
+      for (int i = 1; i <= floorNumber; i++) {
+        floorList.add(
+          ListTile(
+            title: Text("$i층"),
+            onTap: () {
+              setState(() {
+                selectedFloor = i;
+              });
+              log("$i", name: "check");
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }
     }
     return ListView(children: floorList);
   }
