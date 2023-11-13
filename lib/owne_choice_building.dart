@@ -11,6 +11,7 @@ class OwnerChoiceBuilding extends StatelessWidget {
 
   final Completer<NaverMapController> _mapControllerCompleter =
       Completer<NaverMapController>();
+
   late NaverMapController _controller;
 
   @override
@@ -45,8 +46,9 @@ class OwnerChoiceBuilding extends StatelessWidget {
                   await showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        String buildingName = '';
+                        String buildingName = "";
                         String floorNumber = "";
+                        NLatLng markerPoistion = marker.position;
                         return AlertDialog(
                           title: const Text(
                             "건물 정보 입력",
@@ -118,6 +120,7 @@ class OwnerChoiceBuilding extends StatelessWidget {
                                             Owner(
                                           buildingName: buildingName,
                                           floorNumber: int.parse(floorNumber),
+                                          nMarkerPosition: markerPoistion,
                                         ),
                                       ),
                                     );

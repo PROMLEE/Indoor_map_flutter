@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -9,15 +8,21 @@ import 'package:flutter/material.dart';
 class Owner extends StatefulWidget {
   final String buildingName;
   final int floorNumber;
+  final NLatLng nMarkerPosition;
+
   const Owner({
     Key? key,
     required this.buildingName,
     required this.floorNumber,
+    required this.nMarkerPosition,
   }) : super(key: key);
 
   @override
-  _OwnerState createState() =>
-      _OwnerState(buildingName: buildingName, floorNumber: floorNumber);
+  _OwnerState createState() => _OwnerState(
+        buildingName: buildingName,
+        floorNumber: floorNumber,
+        nMarkerPosition: nMarkerPosition,
+      );
 }
 
 class _OwnerState extends State<Owner> {
@@ -26,10 +31,12 @@ class _OwnerState extends State<Owner> {
 
   final String buildingName;
   final int floorNumber;
+  final NLatLng nMarkerPosition;
 
   _OwnerState({
     required this.buildingName,
     required this.floorNumber,
+    required this.nMarkerPosition,
   });
 
   @override
