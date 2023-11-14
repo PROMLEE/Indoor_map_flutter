@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -45,10 +47,18 @@ class _OwnerState extends State<Owner> {
     required this.nMarkerPosition,
     this.basementNumber,
   });
-  sendData(file) async {
+  sendData(img, data) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final testRef = storageRef.child("Test2.png");
-    await testRef.putFile(file);
+    final testRefjson = storageRef.child("Test1.json");
+    final Directory directory = await getApplicationDocumentsDirectory();
+    File('${directory.path}/a.json').create();
+    final File file = File('${directory.path}/a.json');
+    Map<String, dynamic> buildingdata = json.decode(data);
+    await file.writeAsString(json.encode(data));
+    await testRefjson.putFile(file);
+    final testRef =
+        storageRef.child("${buildingdata["buildinginfo"]["BuildingName"]}.png");
+    await testRef.putFile(img);
     log("yeayaeyaeya");
   }
 
@@ -111,9 +121,11 @@ class _OwnerState extends State<Owner> {
                 final picker = ImagePicker();
                 final pickedFile =
                     await picker.pickImage(source: ImageSource.gallery);
-                setState(() {
-                  _image = File(pickedFile!.path); //선택된 이미지 파일을 _image 변수에 저장
-                });
+                setState(
+                  () {
+                    _image = File(pickedFile!.path); //선택된 이미지 파일을 _image 변수에 저장
+                  },
+                );
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -172,15 +184,16 @@ class _OwnerState extends State<Owner> {
           } else {
             //파이어베이스 연결필요
             //_image는 Storage에 저장
-            //buildingName : String, floorNumber : Integer, basementNumber : Integer, nMarkerPosition.latitude : double, nMarkerPosition.longtitude : double,
-            //  "BuildingInfo": {
-            //   "BuildingName": "Building A",
-            //   "Latitude": 37.7749,
-            //   "Longitude": -122.4194,
-            //   "Floors": 5,
-            //   "Basement": 2
-            // }
-            sendData(_image);
+            var data = {
+              "BuildingInfo": {
+                "BuildingName": "Building A",
+                "Latitude": 37.7749,
+                "Longitude": -122.4194,
+                "Floors": 5,
+                "Basement": 2
+              }
+            };
+            sendData(_image, data);
             log("업로드 하기 버튼 클릭");
           }
         },
