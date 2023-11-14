@@ -47,7 +47,7 @@ class _OwnerState extends State<Owner> {
   });
   sendData(file) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final testRef = storageRef.child("test1.png");
+    final testRef = storageRef.child("Test2.png");
     await testRef.putFile(file);
     log("yeayaeyaeya");
   }
@@ -114,7 +114,6 @@ class _OwnerState extends State<Owner> {
                 setState(() {
                   _image = File(pickedFile!.path); //선택된 이미지 파일을 _image 변수에 저장
                 });
-                sendData(_image); // test용
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -174,7 +173,14 @@ class _OwnerState extends State<Owner> {
             //파이어베이스 연결필요
             //_image는 Storage에 저장
             //buildingName : String, floorNumber : Integer, basementNumber : Integer, nMarkerPosition.latitude : double, nMarkerPosition.longtitude : double,
-            // sendData(_image);
+            //  "BuildingInfo": {
+            //   "BuildingName": "Building A",
+            //   "Latitude": 37.7749,
+            //   "Longitude": -122.4194,
+            //   "Floors": 5,
+            //   "Basement": 2
+            // }
+            sendData(_image);
             log("업로드 하기 버튼 클릭");
           }
         },
