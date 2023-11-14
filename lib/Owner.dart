@@ -172,6 +172,8 @@ class _OwnerState extends State<Owner> {
             );
           } else {
             //파이어베이스 연결필요
+            //_image는 Storage에 저장
+            //buildingName : String, floorNumber : Integer, basementNumber : Integer, nMarkerPosition.latitude : double, nMarkerPosition.longtitude : double,
             // sendData(_image);
             log("업로드 하기 버튼 클릭");
           }
