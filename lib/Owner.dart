@@ -48,16 +48,16 @@ class _OwnerState extends State<Owner> {
     this.basementNumber,
   });
   sendData(img, data) async {
-    final storageRef = FirebaseStorage.instance.ref();
+    Map<String, dynamic> buildingdata = json.decode(data);
+    final storageRef =
+        FirebaseStorage.instance.ref("${buildingdata["BuildingName"]}");
     final testRefjson = storageRef.child("Test1.json");
     final Directory directory = await getApplicationDocumentsDirectory();
     File('${directory.path}/a.json').create();
     final File file = File('${directory.path}/a.json');
-    Map<String, dynamic> buildingdata = json.decode(data);
     await file.writeAsString(json.encode(data));
     await testRefjson.putFile(file);
-    final testRef =
-        storageRef.child("${buildingdata["buildinginfo"]["BuildingName"]}.png");
+    final testRef = storageRef.child("${buildingdata["BuildingName"]}.png");
     await testRef.putFile(img);
     log("yeayaeyaeya");
   }
@@ -184,15 +184,14 @@ class _OwnerState extends State<Owner> {
           } else {
             //파이어베이스 연결필요
             //_image는 Storage에 저장
-            var data = {
-              "BuildingInfo": {
-                "BuildingName": "Building A",
-                "Latitude": 37.7749,
-                "Longitude": -122.4194,
-                "Floors": 5,
-                "Basement": 2
-              }
-            };
+            String data = '''{
+              "BuildingName": "$buildingName",
+              "Latitude": ${nMarkerPosition.latitude},
+              "Longitude": ${nMarkerPosition.longitude},
+              "Floors": $floorNumber,
+              "Basement": $basementNumber
+            }
+            ''';
             sendData(_image, data);
             log("업로드 하기 버튼 클릭");
           }
