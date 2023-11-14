@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:navermaptest01/owne_choice_building.dart';
@@ -22,10 +21,7 @@ void main() async {
 
 final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 Future<void> signInWithAnonymous() async {
-  UserCredential credential = await _firebaseAuth.signInAnonymously();
-  if (credential.user != null) {
-    log(credential.user!.uid);
-  }
+  await _firebaseAuth.signInAnonymously();
 }
 
 Future<void> _initialize() async {
@@ -48,24 +44,6 @@ class MyApp extends StatelessWidget {
 
 class FirstPage extends StatelessWidget {
   const FirstPage({Key? key}) : super(key: key);
-  // final firestore = FirebaseFirestore.instance;
-  // getData() async {
-  //   // 데이터 가져오기
-  //   var result =
-  //       await firestore.collection('test').doc('OWMeuEgSVQlIvqEk8RMn').get();
-  //   print(result.data());
-  //   log("get complete!");
-  //   // 데이터 보내기
-  //   await firestore.collection("cars").doc().set(
-  //     {
-  //       "brand": "Genesis",
-  //       "name": "G80",
-  //       "price": 7000,
-  //     },
-  //   );
-  //   log("send complete!");
-  // }
-
   @override
   Widget build(BuildContext context) {
     signInWithAnonymous();
