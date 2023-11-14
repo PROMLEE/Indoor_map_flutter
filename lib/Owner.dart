@@ -1,9 +1,11 @@
 import 'dart:developer';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Owner extends StatefulWidget {
   final String buildingName;
@@ -43,6 +45,12 @@ class _OwnerState extends State<Owner> {
     required this.nMarkerPosition,
     this.basementNumber,
   });
+  sendData(file) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final testRef = storageRef.child("test1.png");
+    await testRef.putFile(file);
+    log("yeayaeyaeya");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,12 +112,9 @@ class _OwnerState extends State<Owner> {
                 final pickedFile =
                     await picker.pickImage(source: ImageSource.gallery);
                 setState(() {
-                  if (pickedFile != null) {
-                    _image = File(pickedFile.path); //선택된 이미지 파일을 _image 변수에 저장
-                  } else {
-                    log("이미지가 선택되지 않았습니다 ㅋㅋ");
-                  }
+                  _image = File(pickedFile!.path); //선택된 이미지 파일을 _image 변수에 저장
                 });
+                sendData(_image); // test용
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -167,6 +172,7 @@ class _OwnerState extends State<Owner> {
             );
           } else {
             //파이어베이스 연결필요
+            // sendData(_image);
             log("업로드 하기 버튼 클릭");
           }
         },

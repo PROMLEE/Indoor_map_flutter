@@ -1,14 +1,17 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:navermaptest01/owne_choice_building.dart';
 import 'package:navermaptest01/visitor.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:path_provider/path_provider.dart';
 import 'api_key.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   await _initialize();
