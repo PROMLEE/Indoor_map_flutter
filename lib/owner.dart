@@ -60,7 +60,12 @@ class _OwnerState extends State<Owner> {
     final storageRef = FirebaseStorage.instance.ref(buildingName);
     final testRef = storageRef.child("$buildingName$floor.png");
     await testRef.putFile(img);
-    log("yeayaeyaeya");
+    log("yayayayayayaayayay");
+    Fluttertoast.showToast(
+      msg: "안내도 업로드 완료",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 
   @override
