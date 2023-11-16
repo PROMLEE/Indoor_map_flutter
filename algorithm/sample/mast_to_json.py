@@ -27,7 +27,7 @@ def find_connected_components(mask):
 
 
 # 마스크 이미지 파일 경로
-mask_file_path = "mask_sample.png"
+mask_file_path = "edge_id\edge_1.png"
 
 # 이미지 파일 불러오기 (흑백 모드로 불러옴)
 mask = cv2.imread(mask_file_path, cv2.IMREAD_GRAYSCALE)
@@ -57,7 +57,7 @@ for id, pixels in components.items():
     edge_data.append({"id": id, "caption": f"Edge Group {id}", "pixels": pixels})
 
 # JSON 파일로 저장
-json_file_path = "grouped_mask_data.json"
+json_file_path = "data_1.json"
 with open(json_file_path, "w") as file:
     json.dump(edge_data, file, indent=4)
 
