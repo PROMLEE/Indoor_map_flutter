@@ -12,43 +12,42 @@ with open(json_file_path, "r") as file:
 
 # 마스크 이미지의 크기 설정
 startPoint = 1
-endPoint = 10
-INF = float('inf')
+endPoint = 60
 st_Averx, st_Avery = 0, 0
 div =1
-board = [[0] * 512 for _ in range(512)]
-next = [[[0,0] for _ in range(512)] for _ in range(512)]
+board = [[0] * 513 for _ in range(513)]
+next = [[[0,0] for _ in range(513)] for _ in range(513)]
 
 # JSON 파일의 데이터를 사용하여 각 픽셀 위치에 점 찍기
 
 height, width = 512, 512  # 실제 이미지 크기에 맞게 조정해야 합니다.
-mask = np.zeros((height, width), dtype=np.uint8)
+mask = np.zeros((height, width,3), dtype=np.uint8)
 for group in data["EdgeData"]:
     if group["id"] == startPoint:
         div = len(group["pixels"])
     for pixel in group["pixels"]:
+        x, y = pixel["x"], pixel["y"]
         if group["id"] == startPoint:
-            st_Averx += pixel["x"]
-            st_Avery += pixel["y"]
+            st_Averx += x
+            st_Avery += y
         else:
-            x, y = pixel["x"], pixel["y"]
-            mask[y, x] = 255
             board[y][x] = group["id"]
+        mask[y, x] = 255
 
 st_Averx//=div
 st_Avery//=div
-dx = [1, 0, -1, 0]
-dy = [0, 1, 0, -1]
-dist = [[-1] * 512 for _ in range(512)]
+dx = [1, 0, -1, 0,1,1,-1,-1]
+dy = [0, 1, 0, -1,1,-1,1,-1]
+
 Q = Queue()
 Q.put((st_Averx, st_Avery))
-dist[st_Averx][st_Avery]=1
+board[st_Averx][st_Avery]=-1
 endX, endY = 0, 0
 escape=True
 
 while escape:
     cur = Q.get()
-    for dir in range(4):
+    for dir in range(8):
         nx = cur[0] + dx[dir]
         ny = cur[1] + dy[dir]
         # print(nx, ny)
@@ -57,9 +56,9 @@ while escape:
             escape=False
             next[ny][nx] = (cur[0], cur[1])
             break
-        elif nx<0 or nx>=512 or ny<0 or ny>=512 or dist[ny][nx]==1 or board[ny][nx]: continue
+        elif nx<0 or nx>=512 or ny<0 or ny>=512 or board[ny][nx]==-1 or board[ny][nx]: continue
         Q.put((nx, ny))
-        dist[ny][nx]=1
+        board[ny][nx]=-1
         next[ny][nx] = (cur[0], cur[1])
 path = []
 st = (endX, endY)
@@ -67,10 +66,10 @@ print(next[endY][endX])
 while st != (st_Averx, st_Avery):
     path.append(st)
     print(st)
-    mask[st[1],st[0]] = 255
+    mask[st[1],st[0]] = [0, 0, 255]
     st = next[st[1]][st[0]]
 path.append(st)
-mask[st[1],st[0]] = 255
+mask[st[1],st[0]] = [0, 0, 255]
 print(path)
 mask_file_path ="algorithm/find_way/way/way.png"
 cv2.imwrite(mask_file_path, mask)
