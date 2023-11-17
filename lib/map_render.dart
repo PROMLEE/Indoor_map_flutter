@@ -32,59 +32,61 @@ class _ThirdScreenState extends State<ThirdScreen> {
             ],
           ),
           Expanded(
-            flex: 1,
+            flex: 0,
             child: Padding(
-              padding: const EdgeInsets.only(left: 35),
-              child: ListView(
-                children: [
-                  DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
-                      showSelectedItems: true,
-                      disabledItemFn: (String s) => s.startsWith('I'),
+                padding: const EdgeInsets.only(left: 35),
+                child: SingleChildScrollView(
+                    child: Column(
+                  children: [
+                    DropdownSearch<String>(
+                      popupProps: PopupProps.menu(
+                        showSelectedItems: true,
+                        disabledItemFn: (String s) => s.startsWith('I'),
+                      ),
+                      items: const ["1", "2", "3", "4"],
+                      dropdownDecoratorProps: const DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                            labelText: "층",
+                            hintText: "층 선택",
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            hintStyle: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold)),
+                      ),
+                      onChanged: print,
                     ),
-                    items: const ["1", "2", "3", "4"],
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                          labelText: "층",
-                          hintText: "층 선택",
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                          hintStyle: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
+                    DropdownSearch<String>(
+                      popupProps: PopupProps.menu(
+                        showSelectedItems: true,
+                        disabledItemFn: (String s) => s.startsWith('I'),
+                      ),
+                      items: const ["A", "B", "C", "D"],
+                      dropdownDecoratorProps: const DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                            labelText: "매장명",
+                            hintText: "매장 선택",
+                            labelStyle: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            hintStyle: TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.bold)),
+                      ),
+                      onChanged: print,
                     ),
-                    onChanged: print,
-                  ),
-                  DropdownSearch<String>(
-                    popupProps: PopupProps.menu(
-                      showSelectedItems: true,
-                      disabledItemFn: (String s) => s.startsWith('I'),
-                    ),
-                    items: const ["A", "B", "C", "D"],
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                          labelText: "매장명",
-                          hintText: "건물 내 매장명",
-                          labelStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                          hintStyle: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold)),
-                    ),
-                    onChanged: print,
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ))),
           ),
           const Divider(
             color: Color.fromARGB(255, 170, 170, 170),
           ),
+          //이미지 위젯
           Expanded(
-            flex: 3,
+              child: InteractiveViewer(
+            scaleEnabled: false,
+            constrained: false,
             child: Image.network(
-              "https://blog.kakaocdn.net/dn/bVZ1G7/btrGjcUxaqJ/klF18vEYyDWi8k1n8pLPOk/img.jpg",
-              fit: BoxFit.fill,
+              'https://www.kindacode.com/wp-content/uploads/2020/12/the-cat.jpg',
             ),
-          ),
+          ))
         ],
       ),
     );
