@@ -14,10 +14,23 @@ class ThirdScreen extends StatefulWidget {
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
-  // final storageRef =
-  //     FirebaseStorage.instance.ref("CAU_310").child("CAU_310_6.png");
+  late String imageUrl;
+  final storage = FirebaseStorage.instance;
+  @override
+  void initState() {
+    super.initState(); //imageUrl을 empty string으로 set
+    imageUrl = '';
+    getImageurl();
+  }
+
+  Future<String> getImageurl() async {
+    final ref = storage.ref().child('CAU_310/CAU_310_6.png');
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
+    log(imageUrl);
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -85,19 +98,30 @@ class _ThirdScreenState extends State<ThirdScreen> {
           ),
           //이미지 위젯
           Expanded(
-            child: InteractiveViewer(
-              maxScale: 5.0,
-              minScale: 0.01,
-              child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: Image.network(
-                  "https://www.kindacode.com/wp-content/uploads/2020/12/the-cat.jpg",
-                  fit: BoxFit.fill,
-                ),
-              ),
+            child: FutureBuilder<String>(
+              future: getImageurl(),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return InteractiveViewer(
+                    maxScale: 5.0,
+                    minScale: 0.01,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Image(
+                        image: NetworkImage(snapshot.data!),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
-          )
+          ),
         ],
       ),
     );
