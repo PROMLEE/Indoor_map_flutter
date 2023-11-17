@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 
@@ -11,6 +14,8 @@ class ThirdScreen extends StatefulWidget {
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
+  // final storageRef =
+  //     FirebaseStorage.instance.ref("CAU_310").child("CAU_310_6.png");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,13 +85,19 @@ class _ThirdScreenState extends State<ThirdScreen> {
           ),
           //이미지 위젯
           Expanded(
-              child: InteractiveViewer(
-            scaleEnabled: false,
-            constrained: false,
-            child: Image.network(
-              'https://www.kindacode.com/wp-content/uploads/2020/12/the-cat.jpg',
+            child: InteractiveViewer(
+              maxScale: 5.0,
+              minScale: 0.01,
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Image.network(
+                  "https://www.kindacode.com/wp-content/uploads/2020/12/the-cat.jpg",
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
-          ))
+          )
         ],
       ),
     );
