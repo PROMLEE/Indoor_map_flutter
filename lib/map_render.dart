@@ -4,6 +4,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:navermaptest01/visitor_choose_endpoint.dart';
 
 class ThirdScreen extends StatefulWidget {
   const ThirdScreen({required this.marker, Key? key}) : super(key: key);
@@ -125,7 +126,20 @@ class _ThirdScreenState extends State<ThirdScreen> {
                       borderRadius: BorderRadius.circular(10), // 버튼의 모서리를 둥글게
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (_selectedFloor != null && _selectedLocation != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VisitorChooseEndPoint(
+                            selectedFloor: _selectedFloor!,
+                            selectedLocation: _selectedLocation!,
+                            imageUrl: imageUrl,
+                          ),
+                        ),
+                      );
+                    }
+                  },
                   child: const Text("출발지 선택 완료")),
             ),
           const Divider(
