@@ -17,9 +17,9 @@ class NaverMapApp extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.all(30),
+                  margin: const EdgeInsets.only(left: 10, top: 15),
                   child: const Text(
-                    "실내\n길 찾기.",
+                    "실내\n길 찾기.\n건물을 선택하세요.",
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,

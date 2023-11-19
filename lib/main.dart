@@ -53,7 +53,7 @@ class FirstPage extends StatelessWidget {
         Row(
           children: [
             Container(
-              margin: const EdgeInsets.only(left: 30, top: 30),
+              margin: const EdgeInsets.only(left: 10, top: 15),
               child: const Text("실내\n길 찾기. \n\n당신의 목적은 ?",
                   style: TextStyle(
                     fontSize: 30,

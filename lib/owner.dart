@@ -89,7 +89,7 @@ class _OwnerState extends State<Owner> {
             Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.all(30),
+                  margin: const EdgeInsets.only(left: 10, top: 15),
                   child: Text(
                     "$buildingName\n건물\n안내도.",
                     style: const TextStyle(

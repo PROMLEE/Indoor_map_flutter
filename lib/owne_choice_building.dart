@@ -27,7 +27,7 @@ class OwnerChoiceBuilding extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.all(30),
+                  margin: const EdgeInsets.only(left: 10, top: 15),
                   child: const Text("건물을\n선택하세요.",
                       style: TextStyle(
                         fontSize: 30,
