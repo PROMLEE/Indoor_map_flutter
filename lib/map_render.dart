@@ -14,13 +14,26 @@ class ThirdScreen extends StatefulWidget {
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
-  late String imageUrl;
+  //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
+  String imageUrl = '';
   final storage = FirebaseStorage.instance;
+
+  String? _selectedFloor;
+  String? _selectedLocation;
+  bool _showLocationDropdown = false;
+
   @override
   void initState() {
-    super.initState(); //imageUrl을 empty string으로 set
-    imageUrl = '';
-    getImageurl();
+    super.initState();
+    //층, 출발지 선택을 할때마다 이미지를 가져오는 문제 찾음
+    //문제라기보단 비효율적이니까
+    //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
+    //해서 해당 주소를 사용하면 될듯
+    getImageurl().then((url) {
+      setState(() {
+        imageUrl = url;
+      });
+    });
   }
 
   Future<String> getImageurl() async {
@@ -37,7 +50,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
           Row(
             children: [
               Container(
-                margin: const EdgeInsets.only(left: 30, top: 30),
+                margin: const EdgeInsets.only(left: 10, top: 15),
                 child: const Text(
                   "실내\n길 찾기.",
                   style: TextStyle(
@@ -49,78 +62,91 @@ class _ThirdScreenState extends State<ThirdScreen> {
               ),
             ],
           ),
-          Expanded(
-            flex: 0,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 35),
-                child: SingleChildScrollView(
-                    child: Column(
-                  children: [
-                    DropdownSearch<String>(
-                      popupProps: PopupProps.menu(
-                        showSelectedItems: true,
-                        disabledItemFn: (String s) => s.startsWith('I'),
-                      ),
-                      items: const ["1", "2", "3", "4"],
-                      dropdownDecoratorProps: const DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                            labelText: "층",
-                            hintText: "층 선택",
-                            labelStyle: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            hintStyle: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold)),
-                      ),
-                      onChanged: print,
-                    ),
-                    DropdownSearch<String>(
-                      popupProps: PopupProps.menu(
-                        showSelectedItems: true,
-                        disabledItemFn: (String s) => s.startsWith('I'),
-                      ),
-                      items: const ["A", "B", "C", "D"],
-                      dropdownDecoratorProps: const DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                            labelText: "매장명",
-                            hintText: "매장 선택",
-                            labelStyle: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            hintStyle: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold)),
-                      ),
-                      onChanged: print,
-                    ),
-                  ],
-                ))),
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: DropdownSearch<String>(
+              popupProps: PopupProps.menu(
+                showSelectedItems: true,
+                disabledItemFn: (String s) => s.startsWith('I'),
+              ),
+              items: const ["1", "2", "3", "4"],
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                    labelText: "층",
+                    hintText: "층 선택",
+                    labelStyle:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    hintStyle:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _selectedFloor = value;
+                  _showLocationDropdown = true;
+                });
+              },
+            ),
           ),
+          if (_showLocationDropdown)
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: DropdownSearch<String>(
+                popupProps: PopupProps.menu(
+                  showSelectedItems: true,
+                  disabledItemFn: (String s) => s.startsWith('I'),
+                ),
+                items: const ["A", "B", "C", "D"],
+                dropdownDecoratorProps: const DropDownDecoratorProps(
+                  dropdownSearchDecoration: InputDecoration(
+                      labelText: "출발지 선택",
+                      hintText: "가장 가까운 매장 선택",
+                      labelStyle:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      hintStyle:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedLocation = value;
+                  });
+                },
+              ),
+            ),
+          if (_selectedLocation != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(50),
+                    backgroundColor:
+                        const Color.fromARGB(255, 49, 49, 49), // 버튼의 텍스트 색상
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // 버튼의 모서리를 둥글게
+                    ),
+                  ),
+                  onPressed: () {},
+                  child: const Text("출발지 선택 완료")),
+            ),
           const Divider(
             color: Color.fromARGB(255, 170, 170, 170),
           ),
           //이미지 위젯
           Expanded(
-            child: FutureBuilder<String>(
-              future: getImageurl(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return InteractiveViewer(
+            child: imageUrl.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : InteractiveViewer(
                     maxScale: 5.0,
                     minScale: 0.01,
                     child: SizedBox(
                       width: double.infinity,
                       height: double.infinity,
                       child: Image(
-                        image: NetworkImage(snapshot.data!),
+                        image: NetworkImage(imageUrl),
                         fit: BoxFit.fill,
                       ),
                     ),
-                  );
-                }
-              },
-            ),
+                  ),
           ),
         ],
       ),
