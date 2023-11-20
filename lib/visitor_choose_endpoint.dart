@@ -123,7 +123,6 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                           startLocation: selectedLocation,
                           endFloor: _selectedFloorEndPoint!,
                           endLocation: _selectedLocationEndPoint!,
-                          imageUrl: imageUrl,
                         ),
                       ),
                     );

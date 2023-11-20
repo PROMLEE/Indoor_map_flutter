@@ -1,4 +1,5 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class DirectionGuidance extends StatefulWidget {
@@ -6,14 +7,12 @@ class DirectionGuidance extends StatefulWidget {
   final String startLocation;
   final String endFloor;
   final String endLocation;
-  final String imageUrl;
 
   const DirectionGuidance({
     required this.startFloor,
     required this.startLocation,
     required this.endFloor,
     required this.endLocation,
-    required this.imageUrl,
     Key? key,
   }) : super(key: key);
   @override
@@ -25,13 +24,35 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   String? _selectedLocation;
   bool _showLocationDropdown = false;
 
+  //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
+  String imageUrl = '';
+  final storage = FirebaseStorage.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    //층, 출발지 선택을 할때마다 이미지를 가져오는 문제 찾음
+    //문제라기보단 비효율적이니까
+    //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
+    //해서 해당 주소를 사용하면 될듯
+    getImageurl().then((url) {
+      setState(() {
+        imageUrl = url;
+      });
+    });
+  }
+
+  Future<String> getImageurl() async {
+    final ref = storage.ref().child('OCI빌딩/OCI빌딩_10.png');
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
     final startFloor = widget.startFloor; //출발 층
     final startLocation = widget.startLocation; //출발 장소
     final endFloor = widget.endFloor; //도착 층
     final endLocation = widget.endLocation; //도착 장소
-    final imageUrl = widget.imageUrl;
     return Scaffold(
       body: Column(
         children: [
@@ -79,6 +100,7 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
           const Divider(
             color: Color.fromARGB(255, 170, 170, 170),
           ),
+          //이미지 위젯
           Expanded(
             child: imageUrl.isEmpty
                 ? const Center(child: CircularProgressIndicator())
