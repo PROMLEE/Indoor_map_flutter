@@ -12,7 +12,7 @@ with open(json_file_path, "r") as file:
 
 # 마스크 이미지의 크기 설정
 startPoint = 1
-endPoint = 60
+endPoint = 50
 st_Averx, st_Avery = 0, 0
 div =1
 board = [[0] * 513 for _ in range(513)]
@@ -22,12 +22,14 @@ next = [[[0,0] for _ in range(513)] for _ in range(513)]
 
 height, width = 512, 512  # 실제 이미지 크기에 맞게 조정해야 합니다.
 mask = np.zeros((height, width,3), dtype=np.uint8)
-for group in data["EdgeData"]:
+for group in data:
     if group["id"] == startPoint:
         div = len(group["pixels"])
     for pixel in group["pixels"]:
         x, y = pixel["x"], pixel["y"]
-        if group["id"] == startPoint:
+        if group["id"] == 0:
+            board[y][x] = -2
+        elif group["id"] == startPoint:
             st_Averx += x
             st_Avery += y
         else:
@@ -56,7 +58,7 @@ while escape:
             escape=False
             next[ny][nx] = (cur[0], cur[1])
             break
-        elif nx<0 or nx>=512 or ny<0 or ny>=512 or board[ny][nx]==-1 or board[ny][nx]: continue
+        elif nx<0 or nx>=512 or ny<0 or ny>=512 or board[ny][nx]==-1 or board[ny][nx] or board[ny][nx]==-2: continue
         Q.put((nx, ny))
         board[ny][nx]=-1
         next[ny][nx] = (cur[0], cur[1])
