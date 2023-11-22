@@ -4,7 +4,7 @@ import json
 from queue import Queue
 
 # JSON 파일 경로
-json_file_path = "algorithm/find_way/data.json"
+json_file_path = "algorithm/result/data.json"
 
 # JSON 파일에서 데이터 읽기
 with open(json_file_path, "r") as file:
@@ -73,5 +73,5 @@ while st != (st_Averx, st_Avery):
 path.append(st)
 mask[st[1],st[0]] = [0, 0, 255]
 print(path)
-mask_file_path ="algorithm/find_way/way/way.png"
+mask_file_path ="algorithm/result/way.png"
 cv2.imwrite(mask_file_path, mask)
