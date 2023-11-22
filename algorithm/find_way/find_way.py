@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import json
 from queue import Queue
-
 # JSON 파일 경로
 json_file_path = "algorithm/find_way/data.json"
 
@@ -12,7 +11,7 @@ with open(json_file_path, "r") as file:
 
 # 마스크 이미지의 크기 설정
 startPoint = 1
-endPoint = 60
+endPoint = 52
 st_Averx, st_Avery = 0, 0
 div =1
 board = [[0] * 513 for _ in range(513)]
@@ -22,7 +21,7 @@ next = [[[0,0] for _ in range(513)] for _ in range(513)]
 
 height, width = 512, 512  # 실제 이미지 크기에 맞게 조정해야 합니다.
 mask = np.zeros((height, width,3), dtype=np.uint8)
-for group in data["EdgeData"]:
+for group in data:
     if group["id"] == startPoint:
         div = len(group["pixels"])
     for pixel in group["pixels"]:
@@ -73,3 +72,4 @@ mask[st[1],st[0]] = [0, 0, 255]
 print(path)
 mask_file_path ="algorithm/find_way/way/way.png"
 cv2.imwrite(mask_file_path, mask)
+
