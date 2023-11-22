@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:navermaptest01/map_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class NaverMapApp extends StatefulWidget {
   const NaverMapApp({Key? key}) : super(key: key);
@@ -17,14 +13,23 @@ class NaverMapApp extends StatefulWidget {
 }
 
 class _NaverMapAppState extends State<NaverMapApp> {
-  String uid = FirebaseAuth.instance.currentUser!.uid; //현재 파이어베이스에 로그인되어있는 uid
 //서버에서 가져오는 시간이 있으니까 async랑 await을 써줘야함
-  getUserInfo() async {
-    var result = await FirebaseFirestore.instance
-        .collection("36705604")
-        .doc("VvYL2K0517jsE1TXoLAv")
-        .get();
-    return result.data();
+  Future<List<DocumentSnapshot>> getBuildingsData() async {
+    final firestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firestore.collection('buildings').get();
+    return querySnapshot.docs;
+  }
+
+  NMarker createMarker(DocumentSnapshot buildingData) {
+    var data = buildingData.data() as Map<String, dynamic>;
+    var lat = data['Latitude'] as double;
+    var lon = data['Longitude'] as double;
+    var buildingName = data['BuildingName'];
+    var marker = NMarker(
+      id: buildingName,
+      position: NLatLng(lat, lon),
+    );
+    return marker;
   }
 
 //DB에서 가져온 데이터를 보여줄때는 FutureBuilder나 StreamBuilder를 사용해야함
@@ -55,7 +60,7 @@ class _NaverMapAppState extends State<NaverMapApp> {
             ),
             Expanded(
               child: FutureBuilder(
-                future: getUserInfo(),
+                future: getBuildingsData(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   //가져온 데이터는 snapshot에 저장되어있음
                   //snapshot은 object타입이라 바로 접근 불가
@@ -84,42 +89,23 @@ class _NaverMapAppState extends State<NaverMapApp> {
                                       const Icon(Icons.other_houses_outlined),
                                   size: const Size(48, 48),
                                   context: context);
-                              final marker1 = NMarker(
-                                  id: "icon_test",
-                                  position: const NLatLng(
-                                      37.50315317166826, 126.9556528096827),
-                                  icon: iconImage);
-                              final marker2 = NMarker(
-                                  id: "icon_test2",
-                                  position: const NLatLng(
-                                      37.656502569446545, 127.06337221344113),
-                                  icon: iconImage);
-                              final markers = {marker1, marker2};
-                              mapControllerCompleter.complete(controller);
-                              log("방문객 네이버맵 준비완료!", name: "onMapReady");
-                              controller.addOverlayAll(markers);
-                              marker1.setOnTapListener(
-                                (NMarker marker) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ThirdScreen(marker: marker),
-                                    ),
-                                  );
-                                },
-                              );
-                              marker2.setOnTapListener(
-                                (NMarker marker) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ThirdScreen(marker: marker),
-                                    ),
-                                  );
-                                },
-                              );
+                              for (var buildingData in snapshot.data) {
+                                var marker = createMarker(buildingData);
+                                marker.setIcon(iconImage); // 아이콘 이미지 설정
+                                controller.addOverlay(marker); // 마커를 지도에 추가
+                                // 마커 클릭 리스너 설정
+                                marker.setOnTapListener(
+                                  (NMarker marker) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ThirdScreen(marker: marker),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
                             },
                           )
                         : const Center(child: CircularProgressIndicator());
