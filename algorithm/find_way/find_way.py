@@ -32,9 +32,10 @@ for group in data:
         elif group["id"] == startPoint:
             st_Averx += x
             st_Avery += y
+            mask[y, x] = 255
         else:
             board[y][x] = group["id"]
-        mask[y, x] = 255
+            mask[y, x] = 255
 
 st_Averx//=div
 st_Avery//=div
