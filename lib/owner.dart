@@ -48,12 +48,17 @@ class _OwnerState extends State<Owner> {
   });
   sendBuildingInfo(data) async {
     final firestore = FirebaseFirestore.instance;
-    await firestore
-        .collection(data["Latitude"].toString().substring(5, 9) +
-            data["Longitude"].toString().substring(5, 9))
-        .doc()
-        .set(data);
-    log("됐쓰!");
+    String documentId = data["Latitude"].toString().substring(5, 9) +
+        data["Longitude"].toString().substring(5, 9);
+
+    DocumentReference documentReference = firestore
+        .collection('buildings') // 'buildings'는 컬렉션 이름
+        .doc(documentId); // documentId는 문서 ID
+
+    await documentReference.set(data);
+
+    log("생성된 문서 ID: $documentId");
+    log("됐쓰!!");
   }
 
   sendImg(img, floor) async {

@@ -46,7 +46,7 @@ def draw_line(img, start, end, components):
 
     while True:
         img[y0, x0] = [0, 255, 0]
-        components.setdefault(0, []).append({"x": int(x0), "y": int(y0)})
+        components.setdefault(-2, []).append({"x": int(x0), "y": int(y0)})
         if x0 == x1 and y0 == y1:
             break
         e2 = 2 * err
