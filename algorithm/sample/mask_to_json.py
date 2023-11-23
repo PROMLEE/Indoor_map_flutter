@@ -58,7 +58,7 @@ def draw_line(img, start, end, components):
             y0 += sy
 
 # 이미지 불러오기
-mask_file_path = "algorithm\sources\mask.png"
+mask_file_path = "algorithm\sources\sss.png"
 mask = cv2.imread(mask_file_path, cv2.IMREAD_GRAYSCALE)
 height, width = mask.shape
 
@@ -83,7 +83,7 @@ for label in range(1, num_labels):
 
 components = {}
 # 외곽선 픽셀 간 거리 계산 및 채색
-max_distance = 7
+max_distance = 15
 for label1 in contours:
     for label2 in contours:
         k = True
@@ -105,15 +105,20 @@ for y in range(height):
             components.setdefault(int(label), []).append({"x": int(x), "y": int(y)})
 
 # 이미지 저장
-cv2.imwrite("algorithm/result/edited_mask.png", new_mask)
+cv2.imwrite("algorithm/result/edited_mask_1024.png", new_mask)
 
 
 # JSON 파일로 저장할 데이터 생성
 edge_data = []
 for id, pixels in components.items():
-    edge_data.append({"id": id, "caption": f"Edge Group {id}", "pixels": pixels})
+    if id in [26,46,45,49,32,34]:
+        edge_data.append({"id": id, "caption": f"엘리베이터", "pixels": pixels})
+    elif id in [21,43,51,28,39,61]:
+        edge_data.append({"id": id, "caption": f"계단", "pixels": pixels})
+    else:
+        edge_data.append({"id": id, "caption": f"N:{id}", "pixels": pixels})
 
 # JSON 파일로 저장
-json_file_path = "algorithm/result\data.json"
+json_file_path = "algorithm/result\data_1024.json"
 with open(json_file_path, "w") as file:
     json.dump(edge_data, file, indent=4)
