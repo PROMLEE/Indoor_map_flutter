@@ -22,7 +22,7 @@ for file_name in file_names:
         data = json.load(file)
 
     # JSON 파일에서 데이터 읽기
-    with open(json_file_path, "r") as file:
+    with open(file_path, "r") as file:
         data = json.load(file)
 
     # 마스크 이미지의 크기 설정
