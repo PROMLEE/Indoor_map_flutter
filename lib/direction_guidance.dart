@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,11 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
     final startLocation = widget.startLocation; //출발 장소
     final endFloor = widget.endFloor; //도착 층
     final endLocation = widget.endLocation; //도착 장소
+
+    log(startFloor);
+    log(startLocation);
+    log(endFloor);
+    log(endLocation);
     return Scaffold(
       body: Column(
         children: [
