@@ -18,7 +18,7 @@ def is_boundary_pixel(x, y, mask, height, width):
         mask[y + 1, x + 1],
     ]
 
-    return not all(val == 255 for val in neighbors)
+    return not all(np.array_equal(val, white) for val in neighbors)
 
 def calculate_distance(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
@@ -56,16 +56,19 @@ def draw_line(img, start, end, components):
         elif e2 <= dx:
             err += dx
             y0 += sy
-
+blue = np.array([255, 0, 0])
+white = np.array([255, 255, 255])
 # 이미지 불러오기
-mask_file_path = "algorithm\sources\sss.png"
-mask = cv2.imread(mask_file_path, cv2.IMREAD_GRAYSCALE)
-height, width = mask.shape
+mask_file_path = "algorithm\sources/sss.png"
+mask = cv2.imread(mask_file_path, cv2.IMREAD_COLOR)
+height, width = mask.shape[0:2]
 
 new_mask = np.zeros((height, width), dtype=np.uint8)
 for y in range(height):
     for x in range(width):
-        if mask[y, x] == 255 and is_boundary_pixel(x, y, mask, height, width):
+        if np.array_equal(mask[y, x], white) and is_boundary_pixel(x, y, mask, height, width):
+            new_mask[y, x] = 255
+        elif np.array_equal(mask[y, x], blue):
             new_mask[y, x] = 255
 
 # 연결된 구성 요소 찾기
@@ -111,14 +114,15 @@ cv2.imwrite("algorithm/result/edited_mask_1024.png", new_mask)
 # JSON 파일로 저장할 데이터 생성
 edge_data = []
 for id, pixels in components.items():
-    if id in [26,46,45,49,32,34]:
+    if id in [27,47,50,53,33,35,36]:
         edge_data.append({"id": id, "caption": f"엘리베이터", "pixels": pixels})
-    elif id in [21,43,51,28,39,61]:
+    elif id in [2,22,29,40,45,55,48,43,65]:
         edge_data.append({"id": id, "caption": f"계단", "pixels": pixels})
     else:
         edge_data.append({"id": id, "caption": f"N:{id}", "pixels": pixels})
 
 # JSON 파일로 저장
-json_file_path = "algorithm/result\data_1024.json"
-with open(json_file_path, "w") as file:
-    json.dump(edge_data, file, indent=4)
+for i in range(1, 6):
+    json_file_path = "algorithm/result\data_0"+str(i)+".json"
+    with open(json_file_path, "w") as file:
+        json.dump(edge_data, file, indent=4)
