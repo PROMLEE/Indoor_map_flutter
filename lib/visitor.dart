@@ -118,8 +118,9 @@ class _NaverMapAppState extends State<NaverMapApp> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ThirdScreen(
-                                              data:
-                                                  data), // 데이터를 ThirdScreen으로 전달
+                                            data: data,
+                                            documentId: documentId,
+                                          ), // 데이터를 ThirdScreen으로 전달
                                         ),
                                       );
                                     }

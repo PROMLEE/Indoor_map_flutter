@@ -1,18 +1,23 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/visitor_choose_endpoint.dart';
 
 class ThirdScreen extends StatefulWidget {
-  const ThirdScreen({required this.data, Key? key}) : super(key: key);
+  const ThirdScreen({required this.data, required this.documentId, Key? key})
+      : super(key: key);
   final dynamic data; // 받을 데이터를 위한 변수 추가
-
+  final String documentId;
   @override
   State<ThirdScreen> createState() => _ThirdScreenState();
 }
 
 class _ThirdScreenState extends State<ThirdScreen> {
   //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
+  List<String> _storeNames = []; // 매장명들을 저장할 List
   String imageUrl = '';
   final storage = FirebaseStorage.instance;
 
@@ -90,6 +95,19 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 _selectedFloor = value;
                 _showLocationDropdown = true;
                 imageUrl = await getImageurl();
+                DocumentSnapshot storeDocument = await FirebaseFirestore
+                    .instance
+                    .collection('buildings')
+                    .doc(widget.documentId)
+                    .collection('stores')
+                    .doc('${widget.documentId}_$_selectedFloor')
+                    .get();
+                var tempData = storeDocument.data()
+                    as Map<String, dynamic>; // 데이터를 Map 형태로 받음
+                _storeNames = tempData.values
+                    .toList()
+                    .cast<String>(); // Map의 value들을 List로 변환
+
                 setState(() {});
               },
             ),
@@ -102,7 +120,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                   showSelectedItems: true,
                   disabledItemFn: (String s) => s.startsWith('I'),
                 ),
-                items: const ["A", "B", "C", "D"],
+                items: _storeNames,
                 dropdownDecoratorProps: const DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
                       labelText: "출발지 선택",
@@ -141,6 +159,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                             selectedFloor: _selectedFloor!,
                             selectedLocation: _selectedLocation!,
                             data: widget.data,
+                            documentId: widget.documentId,
                           ),
                         ),
                       );

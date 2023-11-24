@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +10,13 @@ class VisitorChooseEndPoint extends StatefulWidget {
   final String selectedFloor;
   final String selectedLocation;
   final dynamic data;
+  final String documentId;
 
   const VisitorChooseEndPoint({
     required this.selectedFloor,
     required this.selectedLocation,
     required this.data,
+    required this.documentId,
     Key? key,
   }) : super(key: key);
 
@@ -22,6 +25,8 @@ class VisitorChooseEndPoint extends StatefulWidget {
 }
 
 class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
+  List<String> _storeNames = []; // 매장명들을 저장할 List
+
   String imageUrl = '';
   final storage = FirebaseStorage.instance;
 
@@ -56,11 +61,13 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
 
   @override
   Widget build(BuildContext context) {
+    log(widget.data.toString());
     int? basementFloor = widget.data['Basement'];
     int floors = widget.data['Floors'];
 
     final selectedFloor = widget.selectedFloor;
     final selectedLocation = widget.selectedLocation;
+    log(selectedLocation);
     //전달받은 출발한 층과 장소
     log(selectedFloor);
     return Scaffold(
@@ -101,6 +108,17 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               _selectedFloorEndPoint = value;
               _showLocationDropdown = true;
               imageUrl = await getImageurl();
+              DocumentSnapshot storeDocument = await FirebaseFirestore.instance
+                  .collection('buildings')
+                  .doc(widget.documentId)
+                  .collection('stores')
+                  .doc('${widget.documentId}_$_selectedFloorEndPoint')
+                  .get();
+              var tempData = storeDocument.data()
+                  as Map<String, dynamic>; // 데이터를 Map 형태로 받음
+              _storeNames = tempData.values
+                  .toList()
+                  .cast<String>(); // Map의 value들을 List로 변환
               setState(() {});
             },
           ),
@@ -113,7 +131,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                 showSelectedItems: true,
                 disabledItemFn: (String s) => s.startsWith('I'),
               ),
-              items: const ["A", "B", "C", "D", "E"],
+              items: _storeNames,
               dropdownDecoratorProps: const DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                     labelText: "도착지 선택",
