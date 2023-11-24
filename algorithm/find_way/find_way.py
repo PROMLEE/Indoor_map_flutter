@@ -10,27 +10,30 @@ def myPutText(src, text, pos, font_size, font_color) :
     font = ImageFont.truetype("C:/Windows/Fonts/batang.ttc", font_size)
     draw.text(pos, text, font=font, fill= font_color)
     return np.array(img_pil)
-startPoint,startfloor = 4,1
-endPoint,endfloor = 44,1
+startPoint,startfloor = 4,5
+endPoint,endfloor = 44,7
 semipoint = startPoint
 ele_up = 0
 dx = [1, 0, -1, 0,1,1,-1,-1]
 dy = [0, 1, 0, -1,1,-1,1,-1]
 # JSON 파일들의 기본 경로
-base_path = "algorithm/result/"
+base_path = "algorithm/result"
+way_path = "algorithm/result"
+building_name = "CAU310"
+way_file_path = os.path.join("algorithm\\result",building_name,"way")
+if not os.path.exists(way_file_path):
+    os.makedirs(way_file_path, exist_ok=True)
 # 파일명들을 나타내는 리스트
-file_names = [("data_01.json","way.png"), ("data_02.json","way.png"), ("data_03.json","way.png"), ("data_04.json","way.png"), ("data_05.json","way05.png")]
-
+file_names = [f for f in os.listdir(os.path.join(base_path,building_name,"data")) if os.path.isfile(os.path.join(base_path,building_name,"data", f))]
+print(file_names)
 # 파일 경로 생성 및 처리를 위한 for문
 for file_name in file_names:
-    file_path = os.path.join(base_path, file_name[0])
-    mask_path = os.path.join(base_path, file_name[1])
-    floor = int(file_name[0][5:7])
-    if ele_up:
-        if floor != ele_up:
-            continue
+    floor = int(file_name[-7:-5])
+    # if ele_up:
+    #     if floor != ele_up:
+    #         continue
     # JSON 파일에서 데이터 읽기
-    with open(file_path, "r") as file:
+    with open(os.path.join(base_path,building_name,"data", file_name), "r") as file:
         data = json.load(file)
 
     # 마스크 이미지의 크기 설정
@@ -57,7 +60,7 @@ for file_name in file_names:
             sum_y += y
             div+=1
         if id != -2 and id!=1:
-            mask = myPutText(mask, caption, (sum_x//div-7, sum_y//div-5), 11, (0,255,0))
+            mask = myPutText(mask, str(id), (sum_x//div-7, sum_y//div-5), 11, (0,255,0))
         if id == semipoint:
             st_Averx, st_Avery = sum_x//div, sum_y//div
 
@@ -97,5 +100,5 @@ for file_name in file_names:
         st = next[st[1]][st[0]]
     path.append(st)
     mask[st[1],st[0]] = [0, 0, 255]
-    mask_file_path =base_path+"way_"+file_name[0][5:7]+".png"
+    mask_file_path = os.path.join(way_file_path, building_name+"_{:02d}".format(floor)+".png")
     cv2.imwrite(mask_file_path, mask)
