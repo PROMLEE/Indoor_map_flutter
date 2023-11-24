@@ -1,14 +1,11 @@
-import 'dart:developer';
-
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:navermaptest01/visitor_choose_endpoint.dart';
 
 class ThirdScreen extends StatefulWidget {
-  const ThirdScreen({required this.marker, Key? key}) : super(key: key);
-  final NMarker marker;
+  const ThirdScreen({required this.data, Key? key}) : super(key: key);
+  final dynamic data; // 받을 데이터를 위한 변수 추가
 
   @override
   State<ThirdScreen> createState() => _ThirdScreenState();
@@ -23,6 +20,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
   String? _selectedLocation;
   bool _showLocationDropdown = false;
 
+  late String buildingName;
+
   @override
   void initState() {
     super.initState();
@@ -30,21 +29,28 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //문제라기보단 비효율적이니까
     //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
     //해서 해당 주소를 사용하면 될듯
+    buildingName = widget.data['BuildingName'];
+    _selectedFloor = '1'; //층 선택하기전에 기본 이미지
     getImageurl().then((url) {
       setState(() {
         imageUrl = url;
       });
     });
+    //건물이름으로 이미지 접근해야 하니까 위젯이 생성되기전에 초기화
   }
 
   Future<String> getImageurl() async {
-    final ref = storage.ref().child('CAU_310/CAU_310_6.png');
+    final ref = storage
+        .ref()
+        .child('$buildingName/${buildingName}_$_selectedFloor.png');
     return await ref.getDownloadURL();
   }
 
   @override
   Widget build(BuildContext context) {
-    log(imageUrl);
+    int? basementFloor = widget.data['Basement'];
+    int floors = widget.data['Floors'];
+
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -52,9 +58,9 @@ class _ThirdScreenState extends State<ThirdScreen> {
             children: [
               Container(
                 margin: const EdgeInsets.only(left: 10, top: 15),
-                child: const Text(
-                  "실내\n길 찾기.",
-                  style: TextStyle(
+                child: Text(
+                  "$buildingName\n실내\n길 찾기.",
+                  style: const TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 49, 49, 49),
@@ -70,7 +76,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 showSelectedItems: true,
                 disabledItemFn: (String s) => s.startsWith('I'),
               ),
-              items: const ["1", "2", "3", "4"],
+              items: createFloorList(basementFloor, floors),
               dropdownDecoratorProps: const DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                     labelText: "층",
@@ -80,11 +86,11 @@ class _ThirdScreenState extends State<ThirdScreen> {
                     hintStyle:
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _selectedFloor = value;
-                  _showLocationDropdown = true;
-                });
+              onChanged: (value) async {
+                _selectedFloor = value;
+                _showLocationDropdown = true;
+                imageUrl = await getImageurl();
+                setState(() {});
               },
             ),
           ),
@@ -134,7 +140,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                           builder: (context) => VisitorChooseEndPoint(
                             selectedFloor: _selectedFloor!,
                             selectedLocation: _selectedLocation!,
-                            imageUrl: imageUrl,
+                            data: widget.data,
                           ),
                         ),
                       );
@@ -165,5 +171,18 @@ class _ThirdScreenState extends State<ThirdScreen> {
         ],
       ),
     );
+  }
+
+  List<String> createFloorList(int? basementFloor, int floors) {
+    List<String> floorList = [];
+    if (basementFloor != null) {
+      for (int i = basementFloor; i >= 1; i--) {
+        floorList.add("B$i");
+      }
+    }
+    for (int i = 1; i <= floors; i++) {
+      floorList.add("$i");
+    }
+    return floorList;
   }
 }

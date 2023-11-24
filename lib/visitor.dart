@@ -95,14 +95,34 @@ class _NaverMapAppState extends State<NaverMapApp> {
                                 controller.addOverlay(marker); // 마커를 지도에 추가
                                 // 마커 클릭 리스너 설정
                                 marker.setOnTapListener(
-                                  (NMarker marker) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ThirdScreen(marker: marker),
-                                      ),
-                                    );
+                                  (NMarker marker) async {
+                                    // 비동기 함수로 변경
+                                    String documentId = buildingData["Latitude"]
+                                            .toString()
+                                            .substring(5, 9) +
+                                        buildingData["Longitude"]
+                                            .toString()
+                                            .substring(5, 9);
+                                    log(documentId);
+                                    DocumentSnapshot result =
+                                        await FirebaseFirestore.instance
+                                            .collection('buildings')
+                                            .doc(documentId)
+                                            .get(); // await 키워드 사용
+                                    var data = result.data(); // 여기서 데이터를 미리 추출
+                                    log("$data");
+                                    // result.data()를 통해 데이터에 접근 가능
+                                    if (data != null) {
+                                      // 데이터가 null이 아닌 경우에만 Navigator.push 호출
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ThirdScreen(
+                                              data:
+                                                  data), // 데이터를 ThirdScreen으로 전달
+                                        ),
+                                      );
+                                    }
                                   },
                                 );
                               }

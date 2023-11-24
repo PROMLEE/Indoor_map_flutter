@@ -7,12 +7,14 @@ class DirectionGuidance extends StatefulWidget {
   final String startLocation;
   final String endFloor;
   final String endLocation;
+  final dynamic data;
 
   const DirectionGuidance({
     required this.startFloor,
     required this.startLocation,
     required this.endFloor,
     required this.endLocation,
+    required this.data,
     Key? key,
   }) : super(key: key);
   @override
@@ -28,6 +30,8 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   String imageUrl = '';
   final storage = FirebaseStorage.instance;
 
+  late String buildingName;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,8 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
     //문제라기보단 비효율적이니까
     //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
     //해서 해당 주소를 사용하면 될듯
+    buildingName = widget.data['BuildingName'];
+    _selectedFloor = widget.startFloor; // 초기 층을 출발 층으로 설정
     getImageurl().then((url) {
       setState(() {
         imageUrl = url;
@@ -43,7 +49,9 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   Future<String> getImageurl() async {
-    final ref = storage.ref().child('OCI빌딩/OCI빌딩_10.png');
+    final ref = storage
+        .ref()
+        .child('$buildingName/${buildingName}_$_selectedFloor.png');
     return await ref.getDownloadURL();
   }
 
@@ -88,12 +96,11 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
                     hintStyle:
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
-              onChanged: (value) {
-                setState(() {
-                  // 선택된 층 처리
-                  _selectedFloor = value;
-                  _showLocationDropdown = true;
-                });
+              onChanged: (value) async {
+                _selectedFloor = value;
+                _showLocationDropdown = true;
+                imageUrl = await getImageurl();
+                setState(() {});
               },
             ),
           ),
@@ -123,21 +130,54 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   List<String> _getFloorList() {
-    final startFloor = int.tryParse(widget.startFloor) ?? 0;
-    final endFloor = int.tryParse(widget.endFloor) ?? 0;
-    final List<String> floorList = [];
+    int startFloor = 0;
+    int endFloor = 0;
+    bool isStartBasement = false;
+    bool isEndBasement = false;
 
-    if (startFloor <= endFloor) {
-      for (int i = startFloor; i <= endFloor; i++) {
-        floorList.add(i.toString());
-      }
+    if (widget.startFloor.startsWith('B')) {
+      startFloor = int.tryParse(widget.startFloor.substring(1)) ?? 0;
+      isStartBasement = true;
     } else {
-      for (int i = startFloor; i >= endFloor; i--) {
-        floorList.add(i.toString());
-      }
+      startFloor = int.tryParse(widget.startFloor) ?? 0;
     }
 
-    floorList.sort(); // 리스트를 오름차순으로 정렬
+    if (widget.endFloor.startsWith('B')) {
+      endFloor = int.tryParse(widget.endFloor.substring(1)) ?? 0;
+      isEndBasement = true;
+    } else {
+      endFloor = int.tryParse(widget.endFloor) ?? 0;
+    }
+
+    final List<String> floorList = [];
+
+    if (isStartBasement == isEndBasement) {
+      if (startFloor <= endFloor) {
+        for (int i = startFloor; i <= endFloor; i++) {
+          floorList.add((isStartBasement ? 'B' : '') + i.toString());
+        }
+      } else {
+        for (int i = startFloor; i >= endFloor; i--) {
+          floorList.add((isStartBasement ? 'B' : '') + i.toString());
+        }
+      }
+    } else {
+      if (isStartBasement) {
+        for (int i = startFloor; i >= 1; i--) {
+          floorList.add('B$i');
+        }
+        for (int i = 1; i <= endFloor; i++) {
+          floorList.add(i.toString());
+        }
+      } else {
+        for (int i = startFloor; i >= 1; i--) {
+          floorList.add(i.toString());
+        }
+        for (int i = 1; i <= endFloor; i++) {
+          floorList.add('B$i');
+        }
+      }
+    }
 
     return floorList;
   }
