@@ -10,8 +10,8 @@ def myPutText(src, text, pos, font_size, font_color) :
     font = ImageFont.truetype("C:/Windows/Fonts/batang.ttc", font_size)
     draw.text(pos, text, font=font, fill= font_color)
     return np.array(img_pil)
-startPoint,startfloor = 1,1
-endPoint,endfloor = 63,5
+startPoint,startfloor = 4,1
+endPoint,endfloor = 44,1
 semipoint = startPoint
 ele_up = 0
 dx = [1, 0, -1, 0,1,1,-1,-1]
@@ -56,7 +56,7 @@ for file_name in file_names:
             sum_x += x
             sum_y += y
             div+=1
-        if id != -2:
+        if id != -2 and id!=1:
             mask = myPutText(mask, caption, (sum_x//div-7, sum_y//div-5), 11, (0,255,0))
         if id == semipoint:
             st_Averx, st_Avery = sum_x//div, sum_y//div
