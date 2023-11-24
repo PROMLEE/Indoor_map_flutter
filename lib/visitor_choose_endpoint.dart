@@ -1,18 +1,19 @@
 import 'dart:developer';
 
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/direction_guidance.dart';
 
 class VisitorChooseEndPoint extends StatefulWidget {
   final String selectedFloor;
   final String selectedLocation;
-  final String imageUrl;
+  final dynamic data;
 
   const VisitorChooseEndPoint({
     required this.selectedFloor,
     required this.selectedLocation,
-    required this.imageUrl,
+    required this.data,
     Key? key,
   }) : super(key: key);
 
@@ -21,26 +22,56 @@ class VisitorChooseEndPoint extends StatefulWidget {
 }
 
 class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
+  String imageUrl = '';
+  final storage = FirebaseStorage.instance;
+
   String? _selectedFloorEndPoint;
   String? _selectedLocationEndPoint;
   bool _showLocationDropdown = false;
 
+  late String buildingName;
+
+  @override
+  void initState() {
+    super.initState();
+    //층, 출발지 선택을 할때마다 이미지를 가져오는 문제 찾음
+    //문제라기보단 비효율적이니까
+    //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
+    //해서 해당 주소를 사용하면 될듯
+    buildingName = widget.data['BuildingName'];
+    _selectedFloorEndPoint = widget.selectedFloor; // 초기 층을 출발 층으로 설정
+    getImageurl().then((url) {
+      setState(() {
+        imageUrl = url;
+      });
+    });
+  }
+
+  Future<String> getImageurl() async {
+    final ref = storage
+        .ref()
+        .child('$buildingName/${buildingName}_$_selectedFloorEndPoint.png');
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
+    int? basementFloor = widget.data['Basement'];
+    int floors = widget.data['Floors'];
+
     final selectedFloor = widget.selectedFloor;
     final selectedLocation = widget.selectedLocation;
-    final imageUrl = widget.imageUrl;
     //전달받은 출발한 층과 장소
-    log(imageUrl);
+    log(selectedFloor);
     return Scaffold(
       body: Column(children: <Widget>[
         Row(
           children: [
             Container(
               margin: const EdgeInsets.only(left: 10, top: 15),
-              child: const Text(
-                "실내\n길 찾기.",
-                style: TextStyle(
+              child: Text(
+                "$buildingName\n실내\n길 찾기.",
+                style: const TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 49, 49, 49),
@@ -56,7 +87,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               showSelectedItems: true,
               disabledItemFn: (String s) => s.startsWith('I'),
             ),
-            items: const ["1", "2", "3", "4", "5"],
+            items: createFloorList(basementFloor, floors),
             dropdownDecoratorProps: const DropDownDecoratorProps(
               dropdownSearchDecoration: InputDecoration(
                   labelText: "층",
@@ -66,11 +97,11 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                   hintStyle:
                       TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             ),
-            onChanged: (value) {
-              setState(() {
-                _selectedFloorEndPoint = value;
-                _showLocationDropdown = true;
-              });
+            onChanged: (value) async {
+              _selectedFloorEndPoint = value;
+              _showLocationDropdown = true;
+              imageUrl = await getImageurl();
+              setState(() {});
             },
           ),
         ),
@@ -123,6 +154,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                           startLocation: selectedLocation,
                           endFloor: _selectedFloorEndPoint!,
                           endLocation: _selectedLocationEndPoint!,
+                          data: widget.data,
                         ),
                       ),
                     );
@@ -151,5 +183,18 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
         ),
       ]),
     );
+  }
+
+  List<String> createFloorList(int? basementFloor, int floors) {
+    List<String> floorList = [];
+    if (basementFloor != null) {
+      for (int i = basementFloor; i >= 1; i--) {
+        floorList.add("B$i");
+      }
+    }
+    for (int i = 1; i <= floors; i++) {
+      floorList.add("$i");
+    }
+    return floorList;
   }
 }
