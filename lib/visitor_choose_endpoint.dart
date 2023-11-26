@@ -32,6 +32,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
 
   String? _selectedFloorEndPoint;
   String? _selectedLocationEndPoint;
+  String? _selectedTransportMethod;
   bool _showLocationDropdown = false;
 
   late String buildingName;
@@ -148,7 +149,33 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               },
             ),
           ),
+        // 여기에 계단, 엘리베이터 입력받는거 필요함
         if (_selectedLocationEndPoint != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: DropdownSearch<String>(
+              popupProps: PopupProps.menu(
+                showSelectedItems: true,
+                disabledItemFn: (String s) => s.startsWith('I'),
+              ),
+              items: const ["계단", "엘리베이터"],
+              dropdownDecoratorProps: const DropDownDecoratorProps(
+                dropdownSearchDecoration: InputDecoration(
+                    labelText: "이동 수단 선택",
+                    hintText: "이동 수단 선택",
+                    labelStyle:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    hintStyle:
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _selectedTransportMethod = value;
+                });
+              },
+            ),
+          ),
+        if (_selectedTransportMethod != null)
           Padding(
             padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
             child: ElevatedButton(
@@ -172,6 +199,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                           startLocation: selectedLocation,
                           endFloor: _selectedFloorEndPoint!,
                           endLocation: _selectedLocationEndPoint!,
+                          transportMethod: _selectedTransportMethod!,
                           data: widget.data,
                         ),
                       ),

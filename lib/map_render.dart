@@ -35,7 +35,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
     //해서 해당 주소를 사용하면 될듯
     buildingName = widget.data['BuildingName'];
-    _selectedFloor = '1'; //층 선택하기전에 기본 이미지
+    _selectedFloor = '5'; //층 선택하기전에 기본 이미지
     getImageurl().then((url) {
       setState(() {
         imageUrl = url;
