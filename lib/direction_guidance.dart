@@ -9,6 +9,7 @@ class DirectionGuidance extends StatefulWidget {
   final String startLocation;
   final String endFloor;
   final String endLocation;
+  final String transportMethod;
   final dynamic data;
 
   const DirectionGuidance({
@@ -16,6 +17,7 @@ class DirectionGuidance extends StatefulWidget {
     required this.startLocation,
     required this.endFloor,
     required this.endLocation,
+    required this.transportMethod,
     required this.data,
     Key? key,
   }) : super(key: key);
@@ -63,11 +65,13 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
     final startLocation = widget.startLocation; //출발 장소
     final endFloor = widget.endFloor; //도착 층
     final endLocation = widget.endLocation; //도착 장소
+    final transportMethod = widget.transportMethod;
 
     log(startFloor);
     log(startLocation);
     log(endFloor);
     log(endLocation);
+    log(transportMethod);
     return Scaffold(
       body: Column(
         children: [
