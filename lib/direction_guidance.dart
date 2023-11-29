@@ -45,18 +45,16 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
     //해서 해당 주소를 사용하면 될듯
     buildingName = widget.data['BuildingName'];
     _selectedFloor = widget.startFloor; // 초기 층을 출발 층으로 설정
-    getImageurl().then((url) {
-      setState(() {
-        imageUrl = url;
-      });
-    });
+    imageUrl = getImageurl();
+    // getImageurl().then((url) {
+    //   setState(() {
+    //     imageUrl = url;
+    //   });
+    // });
   }
 
-  Future<String> getImageurl() async {
-    final ref = storage
-        .ref()
-        .child('$buildingName/${buildingName}_$_selectedFloor.png');
-    return await ref.getDownloadURL();
+  String getImageurl() {
+    return "http://54.180.106.175:5000/way/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
   }
 
   @override
@@ -110,7 +108,7 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
               onChanged: (value) async {
                 _selectedFloor = value;
                 _showLocationDropdown = true;
-                imageUrl = await getImageurl();
+                imageUrl = getImageurl();
                 setState(() {});
               },
             ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/direction_guidance.dart';
+import 'package:http/http.dart' as http;
 
 class VisitorChooseEndPoint extends StatefulWidget {
   final String selectedFloor;
@@ -46,18 +48,31 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
     //해서 해당 주소를 사용하면 될듯
     buildingName = widget.data['BuildingName'];
     _selectedFloorEndPoint = widget.selectedFloor; // 초기 층을 출발 층으로 설정
-    getImageurl().then((url) {
-      setState(() {
-        imageUrl = url;
-      });
-    });
+    imageUrl = getImageurl();
+    // getImageurl().then((url) {
+    //   setState(() {
+    //     imageUrl = url;
+    //   });
+    // });
   }
 
-  Future<String> getImageurl() async {
-    final ref = storage
-        .ref()
-        .child('$buildingName/${buildingName}_$_selectedFloorEndPoint.png');
-    return await ref.getDownloadURL();
+  // Future<String> getImageurl() async {
+  //   final ref = storage
+  //       .ref()
+  //       .child('$buildingName/${buildingName}_$_selectedFloorEndPoint.png');
+  //   return await ref.getDownloadURL();
+  // }
+  String getImageurl() {
+    return "http://54.180.106.175:5000/mask/${buildingName}_${_selectedFloorEndPoint!.padLeft(2, "0")}";
+  }
+
+  void findWay(data) async {
+    var apiUrl = Uri.parse("http://54.180.106.175:5000/findway");
+    await http.post(apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: data);
   }
 
   @override
@@ -108,12 +123,13 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
             onChanged: (value) async {
               _selectedFloorEndPoint = value;
               _showLocationDropdown = true;
-              imageUrl = await getImageurl();
+              imageUrl = getImageurl();
               DocumentSnapshot storeDocument = await FirebaseFirestore.instance
                   .collection('buildings')
                   .doc(widget.documentId)
                   .collection('stores')
-                  .doc('${widget.documentId}_$_selectedFloorEndPoint')
+                  .doc(
+                      '${widget.documentId}_${_selectedFloorEndPoint!.padLeft(2, "0")}')
                   .get();
               var tempData = storeDocument.data()
                   as Map<String, dynamic>; // 데이터를 Map 형태로 받음
@@ -191,6 +207,16 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                 onPressed: () {
                   if (_selectedFloorEndPoint != null &&
                       _selectedLocationEndPoint != null) {
+                    // 임시값..
+                    var data = json.encode({
+                      "building_name": "CAU310",
+                      "startFloor": 2,
+                      "startId": 5,
+                      "endFloor": 5,
+                      "endId": 40,
+                      "elev": 1,
+                    });
+                    findWay(data);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
