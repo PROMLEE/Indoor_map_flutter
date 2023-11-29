@@ -36,19 +36,23 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //해서 해당 주소를 사용하면 될듯
     buildingName = widget.data['BuildingName'];
     _selectedFloor = '5'; //층 선택하기전에 기본 이미지
-    getImageurl().then((url) {
-      setState(() {
-        imageUrl = url;
-      });
-    });
+    imageUrl = getImageurl();
+    // getImageurl().then((url) {
+    //   setState(() {
+    //     imageUrl = url;
+    //   });
+    // });
     //건물이름으로 이미지 접근해야 하니까 위젯이 생성되기전에 초기화
   }
 
-  Future<String> getImageurl() async {
-    final ref = storage
-        .ref()
-        .child('$buildingName/${buildingName}_$_selectedFloor.png');
-    return await ref.getDownloadURL();
+  // Future<String> getImageurl() async {
+  String getImageurl() {
+    // final ref = storage
+    //     .ref()
+    //     .child('$buildingName/${buildingName}_$_selectedFloor.png');
+    // return await ref.getDownloadURL();
+    log("${buildingName}_$_selectedFloor");
+    return "http://54.180.106.175:5000/mask/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
   }
 
   @override
@@ -94,13 +98,14 @@ class _ThirdScreenState extends State<ThirdScreen> {
               onChanged: (value) async {
                 _selectedFloor = value;
                 _showLocationDropdown = true;
-                imageUrl = await getImageurl();
+                imageUrl = getImageurl();
                 DocumentSnapshot storeDocument = await FirebaseFirestore
                     .instance
                     .collection('buildings')
                     .doc(widget.documentId)
                     .collection('stores')
-                    .doc('${widget.documentId}_$_selectedFloor')
+                    .doc(
+                        '${widget.documentId}_${_selectedFloor!.padLeft(2, "0")}')
                     .get();
                 var tempData = storeDocument.data()
                     as Map<String, dynamic>; // 데이터를 Map 형태로 받음
