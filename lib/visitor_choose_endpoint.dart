@@ -220,6 +220,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       "elev": 1,
                     });
                     // 길찾기 실행중
+
                     findWay(data);
                     // 종료
                     Navigator.push(
