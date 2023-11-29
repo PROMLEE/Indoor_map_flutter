@@ -67,12 +67,14 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
   }
 
   void findWay(data) async {
+    log("길찾기 시작");
     var apiUrl = Uri.parse("http://54.180.106.175:5000/findway");
-    await http.post(apiUrl,
+    http.Response response = await http.post(apiUrl,
         headers: {
           'Content-Type': 'application/json',
         },
         body: data);
+    log(response.body); // API에서 종료메시지 전달
   }
 
   @override
@@ -204,7 +206,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                     borderRadius: BorderRadius.circular(10), // 버튼의 모서리를 둥글게
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (_selectedFloorEndPoint != null &&
                       _selectedLocationEndPoint != null) {
                     // 임시값..
@@ -216,7 +218,9 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       "endId": 40,
                       "elev": 1,
                     });
+                    // 길찾기 실행중
                     findWay(data);
+                    // 종료
                     Navigator.push(
                       context,
                       MaterialPageRoute(

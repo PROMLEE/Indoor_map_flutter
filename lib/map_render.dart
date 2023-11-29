@@ -51,6 +51,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //     .ref()
     //     .child('$buildingName/${buildingName}_$_selectedFloor.png');
     // return await ref.getDownloadURL();
+    log("${buildingName}_$_selectedFloor");
     return "http://54.180.106.175:5000/mask/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
   }
 
