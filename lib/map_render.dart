@@ -6,6 +6,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/visitor_choose_endpoint.dart';
+import 'package:advanced_search/advanced_search.dart';
 
 class ThirdScreen extends StatefulWidget {
   const ThirdScreen({required this.data, required this.documentId, Key? key})
@@ -121,24 +122,33 @@ class _ThirdScreenState extends State<ThirdScreen> {
           if (_showLocationDropdown)
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
-              child: DropdownSearch<String>(
-                popupProps: PopupProps.menu(
-                  showSelectedItems: true,
-                  disabledItemFn: (String s) => s.startsWith('I'),
-                ),
-                items: _storeNames,
-                dropdownDecoratorProps: const DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
-                      labelText: "출발지 선택",
-                      hintText: "가장 가까운 매장 선택",
-                      labelStyle:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      hintStyle:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                ),
-                onChanged: (value) {
+              // child: DropdownSearch<String>(
+              //   popupProps: PopupProps.menu(
+              //     showSelectedItems: true,
+              //     disabledItemFn: (String s) => s.startsWith('I'),
+              //   ),
+              //   items: _storeNames,
+              //   dropdownDecoratorProps: const DropDownDecoratorProps(
+              //     dropdownSearchDecoration: InputDecoration(
+              //         labelText: "출발지 선택",
+              //         hintText: "가장 가까운 매장 선택",
+              //         labelStyle:
+              //             TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //         hintStyle:
+              //             TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       _selectedLocation = value;
+              //     });
+              //   },
+              // ),
+              child: AdvancedSearch(
+                searchItems: _storeNames,
+                maxElementsToDisplay: 7,
+                onItemTap: (value, str) {
                   setState(() {
-                    _selectedLocation = value;
+                    _selectedLocation = str;
                   });
                 },
               ),

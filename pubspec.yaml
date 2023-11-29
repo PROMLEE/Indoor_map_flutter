@@ -46,6 +46,8 @@ dependencies:
   path_provider:
   firebase_database: ^10.3.4
   http:
+  advanced_search: ^2.2.3
+  flutter_keyboard_visibility: ^5.4.1
 
 dev_dependencies:
   flutter_test:
