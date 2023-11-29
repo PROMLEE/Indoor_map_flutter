@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'api_key.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   String getImageurl() {
-    return "http://54.180.106.175:5000/way/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
   }
 
   @override
