@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'api_key.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -63,13 +64,13 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
   //   return await ref.getDownloadURL();
   // }
   String getImageurl() {
-    return "http://54.180.106.175:5000/mask/${buildingName}_${_selectedFloorEndPoint!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloorEndPoint!.padLeft(2, "0")}";
   }
 
   void findWay(data) async {
     log("길찾기 시작");
-    var apiUrl = Uri.parse("http://54.180.106.175:5000/findway");
-    http.Response response = await http.post(apiUrl,
+    var apilink = Uri.parse("http://$apiUrl:5000/findway");
+    http.Response response = await http.post(apilink,
         headers: {
           'Content-Type': 'application/json',
         },

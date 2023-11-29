@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'api_key.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -52,7 +53,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //     .child('$buildingName/${buildingName}_$_selectedFloor.png');
     // return await ref.getDownloadURL();
     log("${buildingName}_$_selectedFloor");
-    return "http://54.180.106.175:5000/mask/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
   }
 
   @override
