@@ -6,6 +6,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/visitor_choose_endpoint.dart';
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'searchbox.dart';
 
 class ThirdScreen extends StatefulWidget {
   const ThirdScreen({required this.data, required this.documentId, Key? key})
@@ -18,15 +20,15 @@ class ThirdScreen extends StatefulWidget {
 
 class _ThirdScreenState extends State<ThirdScreen> {
   //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
-  List<String> _storeNames = []; // 매장명들을 저장할 List
+  // final List<String> _storeNames = []; // 매장명들을 저장할 List
   String imageUrl = '';
   final storage = FirebaseStorage.instance;
   Map<String, dynamic> tempData = {};
-  String? _selectedFloor;
-  String? _selectedLocation;
+  int? _selectedFloor;
+  int? _selectedLocation;
   bool _showLocationDropdown = false;
   late String buildingName;
-
+  List<Store> list = [];
   @override
   void initState() {
     super.initState();
@@ -35,7 +37,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //주소를 init할때 가져와서, 가져온 주소를 변수 상태로 저장
     //해서 해당 주소를 사용하면 될듯
     buildingName = widget.data['BuildingName'];
-    _selectedFloor = '5'; //층 선택하기전에 기본 이미지
+    _selectedFloor = 5; //층 선택하기전에 기본 이미지
     imageUrl = getImageurl();
     // getImageurl().then((url) {
     //   setState(() {
@@ -52,7 +54,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
     //     .child('$buildingName/${buildingName}_$_selectedFloor.png');
     // return await ref.getDownloadURL();
     log("${buildingName}_$_selectedFloor");
-    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloor.toString().padLeft(2, '0')}";
   }
 
   @override
@@ -96,7 +98,8 @@ class _ThirdScreenState extends State<ThirdScreen> {
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
               onChanged: (value) async {
-                _selectedFloor = value;
+                if (value!.contains('B')) value.replaceAll('B', '-');
+                _selectedFloor = int.parse(value);
                 _showLocationDropdown = true;
                 imageUrl = getImageurl();
                 DocumentSnapshot storeDocument = await FirebaseFirestore
@@ -105,13 +108,13 @@ class _ThirdScreenState extends State<ThirdScreen> {
                     .doc(widget.documentId)
                     .collection('stores')
                     .doc(
-                        '${widget.documentId}_${_selectedFloor!.padLeft(2, "0")}')
+                        '${widget.documentId}_${_selectedFloor.toString().padLeft(2, '0')}')
                     .get();
                 tempData = storeDocument.data()
                     as Map<String, dynamic>; //데이터를 Map 형태로 받음
-                _storeNames = tempData.values
-                    .toList()
-                    .cast<String>(); // Map의 value들을 List로 변환
+                list = tempData.entries.map((entry) {
+                  return Store(entry.value, entry.key);
+                }).toList();
                 setState(() {});
               },
             ),
@@ -119,25 +122,34 @@ class _ThirdScreenState extends State<ThirdScreen> {
           if (_showLocationDropdown)
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
-              child: DropdownSearch<String>(
-                popupProps: PopupProps.menu(
-                  showSelectedItems: true,
-                  disabledItemFn: (String s) => s.startsWith('I'),
-                ),
-                items: _storeNames,
-                dropdownDecoratorProps: const DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
-                      labelText: "출발지 선택",
-                      hintText: "가장 가까운 매장 선택",
-                      labelStyle:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      hintStyle:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                ),
+              // child: DropdownSearch<String>(
+              //   popupProps: PopupProps.menu(
+              //     showSelectedItems: true,
+              //     disabledItemFn: (String s) => s.startsWith('I'),
+              //   ),
+              //   items: _storeNames,
+              //   dropdownDecoratorProps: const DropDownDecoratorProps(
+              //     dropdownSearchDecoration: InputDecoration(
+              //         labelText: "출발지 선택",
+              //         hintText: "가장 가까운 매장 선택",
+              //         labelStyle:
+              //             TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //         hintStyle:
+              //             TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       _selectedLocation = value;
+              //     });
+              //   },
+              // ),
+              child: CustomDropdown<Store>.search(
+                hintText: '출발지 선택',
+                items: list,
+                excludeSelected: false,
                 onChanged: (value) {
-                  setState(() {
-                    _selectedLocation = value;
-                  });
+                  log('changing value to: ${value.id}');
+                  _selectedLocation = int.parse(value.id);
                 },
               ),
             ),

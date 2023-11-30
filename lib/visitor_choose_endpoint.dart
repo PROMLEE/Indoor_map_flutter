@@ -4,14 +4,16 @@ import 'dart:developer';
 import 'api_key.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/direction_guidance.dart';
 import 'package:http/http.dart' as http;
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'searchbox.dart';
 
 class VisitorChooseEndPoint extends StatefulWidget {
-  final String selectedFloor;
-  final String selectedLocation;
+  final int selectedFloor;
+  final int selectedLocation;
   final dynamic data;
   final String documentId;
 
@@ -28,13 +30,13 @@ class VisitorChooseEndPoint extends StatefulWidget {
 }
 
 class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
-  List<String> _storeNames = []; // 매장명들을 저장할 List
+  List<Store> _storeNames = []; // 매장명들을 저장할 List
 
   String imageUrl = '';
-  final storage = FirebaseStorage.instance;
+  // final storage = FirebaseStorage.instance;
 
-  String? _selectedFloorEndPoint;
-  String? _selectedLocationEndPoint;
+  int? _selectedFloorEndPoint;
+  int? _selectedLocationEndPoint;
   String? _selectedTransportMethod;
   bool _showLocationDropdown = false;
 
@@ -64,7 +66,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
   //   return await ref.getDownloadURL();
   // }
   String getImageurl() {
-    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloorEndPoint!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloorEndPoint!.toString().padLeft(2, '0')}";
   }
 
   void findWay(data) async {
@@ -86,9 +88,9 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
 
     final selectedFloor = widget.selectedFloor;
     final selectedLocation = widget.selectedLocation;
-    log(selectedLocation);
+    log(selectedLocation.toString());
     //전달받은 출발한 층과 장소
-    log(selectedFloor);
+    log(selectedFloor.toString());
     return Scaffold(
       body: Column(children: <Widget>[
         Row(
@@ -124,7 +126,8 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             ),
             onChanged: (value) async {
-              _selectedFloorEndPoint = value;
+              if (value!.contains('B')) value.replaceAll('B', '-');
+              _selectedFloorEndPoint = int.parse(value);
               _showLocationDropdown = true;
               imageUrl = getImageurl();
               DocumentSnapshot storeDocument = await FirebaseFirestore.instance
@@ -132,13 +135,16 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                   .doc(widget.documentId)
                   .collection('stores')
                   .doc(
-                      '${widget.documentId}_${_selectedFloorEndPoint!.padLeft(2, "0")}')
+                      '${widget.documentId}_${_selectedFloorEndPoint!.toString().padLeft(2, "0")}')
                   .get();
               var tempData = storeDocument.data()
                   as Map<String, dynamic>; // 데이터를 Map 형태로 받음
-              _storeNames = tempData.values
-                  .toList()
-                  .cast<String>(); // Map의 value들을 List로 변환
+              _storeNames = tempData.entries.map((entry) {
+                return Store(entry.value, entry.key);
+              }).toList();
+              // _storeNames = tempData.values
+              //     .toList()
+              //     .cast<String>(); // Map의 value들을 List로 변환
               setState(() {});
             },
           ),
@@ -146,25 +152,34 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
         if (_showLocationDropdown)
           Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
-            child: DropdownSearch<String>(
-              popupProps: PopupProps.menu(
-                showSelectedItems: true,
-                disabledItemFn: (String s) => s.startsWith('I'),
-              ),
+            // child: DropdownSearch<String>(
+            //   popupProps: PopupProps.menu(
+            //     showSelectedItems: true,
+            //     disabledItemFn: (String s) => s.startsWith('I'),
+            //   ),
+            //   items: _storeNames,
+            //   dropdownDecoratorProps: const DropDownDecoratorProps(
+            //     dropdownSearchDecoration: InputDecoration(
+            //         labelText: "도착지 선택",
+            //         hintText: "가고싶은 매장 선택",
+            //         labelStyle:
+            //             TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            //         hintStyle:
+            //             TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            //   ),
+            //   onChanged: (value) {
+            //     setState(() {
+            //       _selectedLocationEndPoint = value;
+            //     });
+            //   },
+            // ),
+            child: CustomDropdown<Store>.search(
+              hintText: '출발지 선택',
               items: _storeNames,
-              dropdownDecoratorProps: const DropDownDecoratorProps(
-                dropdownSearchDecoration: InputDecoration(
-                    labelText: "도착지 선택",
-                    hintText: "가고싶은 매장 선택",
-                    labelStyle:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    hintStyle:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
+              excludeSelected: false,
               onChanged: (value) {
-                setState(() {
-                  _selectedLocationEndPoint = value;
-                });
+                log('changing value to: ${value.id}');
+                _selectedLocationEndPoint = int.parse(value.id);
               },
             ),
           ),
@@ -228,9 +243,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       MaterialPageRoute(
                         builder: (context) => DirectionGuidance(
                           startFloor: selectedFloor,
-                          startLocation: selectedLocation,
                           endFloor: _selectedFloorEndPoint!,
-                          endLocation: _selectedLocationEndPoint!,
                           transportMethod: _selectedTransportMethod!,
                           data: widget.data,
                         ),

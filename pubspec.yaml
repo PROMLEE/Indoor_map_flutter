@@ -46,6 +46,7 @@ dependencies:
   path_provider:
   firebase_database: ^10.3.4
   http:
+  animated_custom_dropdown: 2.0.0
 
 dev_dependencies:
   flutter_test:

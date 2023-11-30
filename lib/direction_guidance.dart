@@ -6,18 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class DirectionGuidance extends StatefulWidget {
-  final String startFloor;
-  final String startLocation;
-  final String endFloor;
-  final String endLocation;
+  final int startFloor;
+  final int endFloor;
   final String transportMethod;
   final dynamic data;
 
   const DirectionGuidance({
     required this.startFloor,
-    required this.startLocation,
     required this.endFloor,
-    required this.endLocation,
     required this.transportMethod,
     required this.data,
     Key? key,
@@ -27,8 +23,8 @@ class DirectionGuidance extends StatefulWidget {
 }
 
 class _DirectionGuidanceState extends State<DirectionGuidance> {
-  String? _selectedFloor;
-  String? _selectedLocation;
+  int? _selectedFloor;
+  int? _selectedLocation;
   bool _showLocationDropdown = false;
 
   //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
@@ -55,21 +51,17 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   String getImageurl() {
-    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.toString().padLeft(2, "0")}";
   }
 
   @override
   Widget build(BuildContext context) {
     final startFloor = widget.startFloor; //출발 층
-    final startLocation = widget.startLocation; //출발 장소
     final endFloor = widget.endFloor; //도착 층
-    final endLocation = widget.endLocation; //도착 장소
     final transportMethod = widget.transportMethod;
 
-    log(startFloor);
-    log(startLocation);
-    log(endFloor);
-    log(endLocation);
+    log(startFloor.toString());
+    log(endFloor.toString());
     log(transportMethod);
     return Scaffold(
       body: Column(
@@ -107,7 +99,8 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
               onChanged: (value) async {
-                _selectedFloor = value;
+                if (value!.contains('B')) value.replaceAll('B', '-');
+                _selectedFloor = int.parse(value);
                 _showLocationDropdown = true;
                 imageUrl = getImageurl();
                 setState(() {});
