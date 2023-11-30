@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'api_key.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/direction_guidance.dart';
 import 'package:http/http.dart' as http;
@@ -33,11 +32,10 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
   List<Store> _storeNames = []; // 매장명들을 저장할 List
 
   String imageUrl = '';
-  // final storage = FirebaseStorage.instance;
 
   int? _selectedFloorEndPoint;
   int? _selectedLocationEndPoint;
-  String? _selectedTransportMethod;
+  int? _selectedTransportMethod;
   bool _showLocationDropdown = false;
 
   late String buildingName;
@@ -52,24 +50,13 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
     buildingName = widget.data['BuildingName'];
     _selectedFloorEndPoint = widget.selectedFloor; // 초기 층을 출발 층으로 설정
     imageUrl = getImageurl();
-    // getImageurl().then((url) {
-    //   setState(() {
-    //     imageUrl = url;
-    //   });
-    // });
   }
 
-  // Future<String> getImageurl() async {
-  //   final ref = storage
-  //       .ref()
-  //       .child('$buildingName/${buildingName}_$_selectedFloorEndPoint.png');
-  //   return await ref.getDownloadURL();
-  // }
   String getImageurl() {
     return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloorEndPoint!.toString().padLeft(2, '0')}";
   }
 
-  void findWay(data) async {
+  Future<String> findWay(data) async {
     log("길찾기 시작");
     var apilink = Uri.parse("http://$apiUrl:5000/findway");
     http.Response response = await http.post(apilink,
@@ -77,7 +64,8 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
           'Content-Type': 'application/json',
         },
         body: data);
-    log(response.body); // API에서 종료메시지 전달
+    log(response.body);
+    return response.body; // API에서 종료메시지 전달
   }
 
   @override
@@ -142,9 +130,6 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               _storeNames = tempData.entries.map((entry) {
                 return Store(entry.value, entry.key);
               }).toList();
-              // _storeNames = tempData.values
-              //     .toList()
-              //     .cast<String>(); // Map의 value들을 List로 변환
               setState(() {});
             },
           ),
@@ -152,27 +137,6 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
         if (_showLocationDropdown)
           Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
-            // child: DropdownSearch<String>(
-            //   popupProps: PopupProps.menu(
-            //     showSelectedItems: true,
-            //     disabledItemFn: (String s) => s.startsWith('I'),
-            //   ),
-            //   items: _storeNames,
-            //   dropdownDecoratorProps: const DropDownDecoratorProps(
-            //     dropdownSearchDecoration: InputDecoration(
-            //         labelText: "도착지 선택",
-            //         hintText: "가고싶은 매장 선택",
-            //         labelStyle:
-            //             TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            //         hintStyle:
-            //             TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-            //   ),
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _selectedLocationEndPoint = value;
-            //     });
-            //   },
-            // ),
             child: CustomDropdown<Store>.search(
               hintText: '출발지 선택',
               items: _storeNames,
@@ -180,6 +144,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               onChanged: (value) {
                 log('changing value to: ${value.id}');
                 _selectedLocationEndPoint = int.parse(value.id);
+                setState(() {});
               },
             ),
           ),
@@ -204,7 +169,11 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _selectedTransportMethod = value;
+                  if (value == "계단") {
+                    _selectedTransportMethod = 0;
+                  } else {
+                    _selectedTransportMethod = 1;
+                  }
                 });
               },
             ),
@@ -227,16 +196,16 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       _selectedLocationEndPoint != null) {
                     // 임시값..
                     var data = json.encode({
-                      "building_name": "CAU310",
-                      "startFloor": 2,
-                      "startId": 5,
-                      "endFloor": 5,
-                      "endId": 40,
-                      "elev": 1,
+                      "building_name": buildingName,
+                      "startFloor": selectedFloor,
+                      "startId": selectedLocation,
+                      "endFloor": _selectedFloorEndPoint,
+                      "endId": _selectedLocationEndPoint,
+                      "elev": _selectedTransportMethod,
                     });
                     // 길찾기 실행중
 
-                    findWay(data);
+                    var x = await findWay(data);
                     // 종료
                     Navigator.push(
                       context,
@@ -244,7 +213,6 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                         builder: (context) => DirectionGuidance(
                           startFloor: selectedFloor,
                           endFloor: _selectedFloorEndPoint!,
-                          transportMethod: _selectedTransportMethod!,
                           data: widget.data,
                         ),
                       ),

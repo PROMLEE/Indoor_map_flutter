@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'api_key.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:navermaptest01/visitor_choose_endpoint.dart';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
@@ -20,9 +19,7 @@ class ThirdScreen extends StatefulWidget {
 
 class _ThirdScreenState extends State<ThirdScreen> {
   //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
-  // final List<String> _storeNames = []; // 매장명들을 저장할 List
   String imageUrl = '';
-  final storage = FirebaseStorage.instance;
   Map<String, dynamic> tempData = {};
   int? _selectedFloor;
   int? _selectedLocation;
@@ -39,20 +36,10 @@ class _ThirdScreenState extends State<ThirdScreen> {
     buildingName = widget.data['BuildingName'];
     _selectedFloor = 5; //층 선택하기전에 기본 이미지
     imageUrl = getImageurl();
-    // getImageurl().then((url) {
-    //   setState(() {
-    //     imageUrl = url;
-    //   });
-    // });
     //건물이름으로 이미지 접근해야 하니까 위젯이 생성되기전에 초기화
   }
 
-  // Future<String> getImageurl() async {
   String getImageurl() {
-    // final ref = storage
-    //     .ref()
-    //     .child('$buildingName/${buildingName}_$_selectedFloor.png');
-    // return await ref.getDownloadURL();
     log("${buildingName}_$_selectedFloor");
     return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloor.toString().padLeft(2, '0')}";
   }
@@ -61,7 +48,6 @@ class _ThirdScreenState extends State<ThirdScreen> {
   Widget build(BuildContext context) {
     int? basementFloor = widget.data['Basement'];
     int floors = widget.data['Floors'];
-    String? selected;
     return Scaffold(
       body: Column(
         children: <Widget>[
@@ -122,27 +108,6 @@ class _ThirdScreenState extends State<ThirdScreen> {
           if (_showLocationDropdown)
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
-              // child: DropdownSearch<String>(
-              //   popupProps: PopupProps.menu(
-              //     showSelectedItems: true,
-              //     disabledItemFn: (String s) => s.startsWith('I'),
-              //   ),
-              //   items: _storeNames,
-              //   dropdownDecoratorProps: const DropDownDecoratorProps(
-              //     dropdownSearchDecoration: InputDecoration(
-              //         labelText: "출발지 선택",
-              //         hintText: "가장 가까운 매장 선택",
-              //         labelStyle:
-              //             TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              //         hintStyle:
-              //             TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              //   ),
-              //   onChanged: (value) {
-              //     setState(() {
-              //       _selectedLocation = value;
-              //     });
-              //   },
-              // ),
               child: CustomDropdown<Store>.search(
                 hintText: '출발지 선택',
                 items: list,
@@ -150,10 +115,12 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 onChanged: (value) {
                   log('changing value to: ${value.id}');
                   _selectedLocation = int.parse(value.id);
+                  log(_selectedLocation.toString());
+                  setState(() {});
                 },
               ),
             ),
-          if (_selectedLocation != null)
+          if (_selectedLocation != 0)
             Padding(
               padding: const EdgeInsets.only(left: 15, top: 15, right: 15),
               child: ElevatedButton(
@@ -167,7 +134,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                     ),
                   ),
                   onPressed: () {
-                    if (_selectedFloor != null && _selectedLocation != null) {
+                    if (_selectedFloor != null) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
