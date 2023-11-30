@@ -2,23 +2,16 @@ import 'dart:developer';
 
 import 'api_key.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class DirectionGuidance extends StatefulWidget {
-  final String startFloor;
-  final String startLocation;
-  final String endFloor;
-  final String endLocation;
-  final String transportMethod;
+  final int startFloor;
+  final int endFloor;
   final dynamic data;
 
   const DirectionGuidance({
     required this.startFloor,
-    required this.startLocation,
     required this.endFloor,
-    required this.endLocation,
-    required this.transportMethod,
     required this.data,
     Key? key,
   }) : super(key: key);
@@ -27,13 +20,10 @@ class DirectionGuidance extends StatefulWidget {
 }
 
 class _DirectionGuidanceState extends State<DirectionGuidance> {
-  String? _selectedFloor;
-  String? _selectedLocation;
-  bool _showLocationDropdown = false;
+  int? _selectedFloor;
 
   //imageUrl을 초기값을 설정해줘야 예외 발생안됨 빈문자열 만듬
   String imageUrl = '';
-  final storage = FirebaseStorage.instance;
 
   late String buildingName;
 
@@ -47,30 +37,19 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
     buildingName = widget.data['BuildingName'];
     _selectedFloor = widget.startFloor; // 초기 층을 출발 층으로 설정
     imageUrl = getImageurl();
-    // getImageurl().then((url) {
-    //   setState(() {
-    //     imageUrl = url;
-    //   });
-    // });
   }
 
   String getImageurl() {
-    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.padLeft(2, "0")}";
+    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.toString().padLeft(2, "0")}";
   }
 
   @override
   Widget build(BuildContext context) {
     final startFloor = widget.startFloor; //출발 층
-    final startLocation = widget.startLocation; //출발 장소
     final endFloor = widget.endFloor; //도착 층
-    final endLocation = widget.endLocation; //도착 장소
-    final transportMethod = widget.transportMethod;
 
-    log(startFloor);
-    log(startLocation);
-    log(endFloor);
-    log(endLocation);
-    log(transportMethod);
+    log(startFloor.toString());
+    log(endFloor.toString());
     return Scaffold(
       body: Column(
         children: [
@@ -107,8 +86,8 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
               onChanged: (value) async {
-                _selectedFloor = value;
-                _showLocationDropdown = true;
+                if (value!.contains('B')) value.replaceAll('B', '-');
+                _selectedFloor = int.parse(value);
                 imageUrl = getImageurl();
                 setState(() {});
               },
@@ -140,25 +119,18 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   List<String> _getFloorList() {
-    int startFloor = 0;
-    int endFloor = 0;
+    int startFloor = widget.startFloor;
+    int endFloor = widget.endFloor;
     bool isStartBasement = false;
     bool isEndBasement = false;
-
-    if (widget.startFloor.startsWith('B')) {
-      startFloor = int.tryParse(widget.startFloor.substring(1)) ?? 0;
+    if (startFloor < 0) {
       isStartBasement = true;
-    } else {
-      startFloor = int.tryParse(widget.startFloor) ?? 0;
+      startFloor = -startFloor;
     }
-
-    if (widget.endFloor.startsWith('B')) {
-      endFloor = int.tryParse(widget.endFloor.substring(1)) ?? 0;
+    if (endFloor < 0) {
       isEndBasement = true;
-    } else {
-      endFloor = int.tryParse(widget.endFloor) ?? 0;
+      endFloor = -endFloor;
     }
-
     final List<String> floorList = [];
 
     if (isStartBasement == isEndBasement) {
