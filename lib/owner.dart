@@ -6,6 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import "api_key.dart";
 
 class Owner extends StatefulWidget {
   final String buildingName;
@@ -59,6 +61,19 @@ class _OwnerState extends State<Owner> {
 
     log("생성된 문서 ID: $documentId");
     log("됐쓰!!");
+  }
+
+  Future uploadFile(floor) async {
+    if (_image == null) return;
+
+    final uri = Uri.parse(
+        'http://$apiUrl:5000/upload/${buildingName}_${floor.padLeft(2, '0')}');
+    // 'http://127.0.0.1:5000/upload/${buildingName}_${floor.padLeft(2, '0')}');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
+
+    await request.send();
+    log('파일 업로드 성공  ${buildingName}_${floor.padLeft(2, '0')}.png');
   }
 
   sendImg(img, floor) async {
@@ -198,7 +213,7 @@ class _OwnerState extends State<Owner> {
           ],
         ),
         bottomNavigationBar: OutlinedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_image == null && selectedFloor == 0) {
               Fluttertoast.showToast(
                 msg: "이미지와 층을 선택해주세요",
@@ -219,11 +234,9 @@ class _OwnerState extends State<Owner> {
               );
             } else {
               //_image는 Storage에 저장
-              sendImg(
-                _image,
-                "_${selectedFloor.toString().replaceAll('-', 'B')}",
-              );
+              String floor = selectedFloor.toString().replaceAll("-", "B");
               log("업로드 하기 버튼 클릭");
+              await uploadFile(floor);
             }
           },
           child: const Row(
