@@ -205,8 +205,10 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                     });
                     // 길찾기 실행중
 
+                    // ignore: unused_local_variable
                     var x = await findWay(data);
                     // 종료
+                    if (!mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
