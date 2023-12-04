@@ -38,7 +38,6 @@ class _NaverMapAppState extends State<NaverMapApp> {
 //그러면 우리는 좌표만 딱 해서 하면되니까 FutureBuilder사용
   @override
   Widget build(BuildContext context) {
-    final Completer<NaverMapController> mapControllerCompleter = Completer();
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -72,7 +71,6 @@ class _NaverMapAppState extends State<NaverMapApp> {
                     return const Center(
                         child: Text('Error: 데이터를 가져오는 데 실패했습니다.'));
                   } else {
-                    var data = snapshot.data;
                     // 데이터를 사용하여 NaverMap 위젯을 구성합니다.
                     return snapshot.hasData
                         ? //데이터 가져오는데 시간이 걸리니까 빌드속도보다 느리면 null이라서 hasData키워드 사용
@@ -114,6 +112,8 @@ class _NaverMapAppState extends State<NaverMapApp> {
                                     // result.data()를 통해 데이터에 접근 가능
                                     if (data != null) {
                                       // 데이터가 null이 아닌 경우에만 Navigator.push 호출
+                                      if (!mounted) return;
+
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(

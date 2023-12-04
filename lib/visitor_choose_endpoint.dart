@@ -250,7 +250,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                         height: double.infinity,
                         child: Image(
                           image: NetworkImage(imageUrl),
-                          fit: BoxFit.fill,
+                          fit: BoxFit.fill
                         ),
                       ),
                     ),

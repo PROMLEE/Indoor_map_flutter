@@ -22,7 +22,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
   String imageUrl = '';
   Map<String, dynamic> tempData = {};
   int? _selectedFloor;
-  int? _selectedLocation;
+  int? _selectedLocation = 0;
   bool _showLocationDropdown = false;
   late String buildingName;
   List<Store> list = [];
