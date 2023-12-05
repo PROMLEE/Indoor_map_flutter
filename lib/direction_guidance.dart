@@ -40,7 +40,7 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
   }
 
   String getImageurl() {
-    return "http://$apiUrl:5000/way/${buildingName}_${_selectedFloor!.toString().padLeft(2, "0")}";
+    return "https://$apiUrl/way/${buildingName}_${_selectedFloor!.toString().padLeft(2, "0").replaceAll("-", "B")}";
   }
 
   @override
@@ -86,8 +86,8 @@ class _DirectionGuidanceState extends State<DirectionGuidance> {
                         TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
               onChanged: (value) async {
-                if (value!.contains('B')) value.replaceAll('B', '-');
-                _selectedFloor = int.parse(value);
+                value = value?.replaceAll('B', '-');
+                _selectedFloor = int.parse(value!);
                 imageUrl = getImageurl();
                 setState(() {});
               },

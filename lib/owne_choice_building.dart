@@ -8,9 +8,14 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:navermaptest01/owner.dart';
 
-class OwnerChoiceBuilding extends StatelessWidget {
-  OwnerChoiceBuilding({Key? key}) : super(key: key);
+class OwnerChoiceBuilding extends StatefulWidget {
+  const OwnerChoiceBuilding({Key? key}) : super(key: key);
 
+  @override
+  State<OwnerChoiceBuilding> createState() => _OwnerChoiceBuildingState();
+}
+
+class _OwnerChoiceBuildingState extends State<OwnerChoiceBuilding> {
   final Completer<NaverMapController> _mapControllerCompleter =
       Completer<NaverMapController>();
 
