@@ -59,7 +59,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
   }
 
   String getImageurl() {
-    return "http://$apiUrl:5000/mask/${buildingName}_${_selectedFloorEndPoint!.toString().padLeft(2, '0')}";
+    return "https://$apiUrl/mask/${buildingName}_${_selectedFloorEndPoint!.toString().padLeft(2, '0').replaceAll("-", "B")}";
   }
 
   Future<String> findWay(data) async {
@@ -67,7 +67,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
       isLoading = true; //로딩 시작
     });
     log("길찾기 시작");
-    var apilink = Uri.parse("http://$apiUrl:5000/findway");
+    var apilink = Uri.parse("https://$apiUrl/findway");
     http.Response response = await http.post(apilink,
         headers: {
           'Content-Type': 'application/json',
@@ -128,8 +128,8 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 ),
                 onChanged: (value) async {
-                  if (value!.contains('B')) value.replaceAll('B', '-');
-                  _selectedFloorEndPoint = int.parse(value);
+                  value = value?.replaceAll('B', '-');
+                  _selectedFloorEndPoint = int.parse(value!);
                   _showLocationDropdown = true;
                   imageUrl = getImageurl();
                   DocumentSnapshot storeDocument = await FirebaseFirestore
@@ -138,7 +138,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                       .doc(widget.documentId)
                       .collection('stores')
                       .doc(
-                          '${widget.documentId}_${_selectedFloorEndPoint!.toString().padLeft(2, "0")}')
+                          '${widget.documentId}_${_selectedFloorEndPoint!.toString().padLeft(2, "0").replaceAll("-", "B")}')
                       .get();
                   var tempData = storeDocument.data()
                       as Map<String, dynamic>; // 데이터를 Map 형태로 받음
@@ -249,9 +249,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                         width: double.infinity,
                         height: double.infinity,
                         child: Image(
-                          image: NetworkImage(imageUrl),
-                          fit: BoxFit.fill
-                        ),
+                            image: NetworkImage(imageUrl), fit: BoxFit.fill),
                       ),
                     ),
             ),
