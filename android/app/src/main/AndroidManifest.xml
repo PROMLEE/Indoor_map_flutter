@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission 
-    android:name="android.permission.INTERNET"/>
+    android:name="android.permission.INTERNET"
+    android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
-        android:label="navermaptest01"
+        android:label="Indoor MAP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
