@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +8,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import "api_key.dart";
+
+void showToast() {
+  Fluttertoast.showToast(
+    msg: "이미지가 업로드되었습니다!!",
+    gravity: ToastGravity.BOTTOM,
+    fontSize: 20,
+  );
+}
 
 class Owner extends StatefulWidget {
   final String buildingName;
@@ -41,6 +49,7 @@ class _OwnerState extends State<Owner> {
   final int floorNumber;
   final NLatLng nMarkerPosition;
   final int? basementNumber;
+  var yesimage = [];
 
   _OwnerState({
     required this.buildingName,
@@ -63,29 +72,28 @@ class _OwnerState extends State<Owner> {
     log("됐쓰!!");
   }
 
+  Future<List<String>> fetchDirectoryImages() async {
+    final url = 'https://$apiUrl/dirimg/$buildingName';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<String> fileList = List<String>.from(json.decode(response.body));
+      yesimage = fileList;
+      return fileList;
+    }
+    return [];
+  }
+
   Future uploadFile(floor) async {
     if (_image == null) return;
-
+    showToast();
     final uri = Uri.parse(
         'https://$apiUrl/upload/${buildingName}_${floor.padLeft(2, '0')}');
-    // 'http://127.0.0.1:5000/upload/${buildingName}_${floor.padLeft(2, '0')}');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
     await request.send();
     log('파일 업로드 성공  ${buildingName}_${floor.padLeft(2, '0')}.png');
-  }
-
-  sendImg(img, floor) async {
-    final storageRef = FirebaseStorage.instance.ref(buildingName);
-    final testRef = storageRef.child("$buildingName$floor.png");
-    await testRef.putFile(img);
-    log("yayayayayayaayayay");
-    Fluttertoast.showToast(
-      msg: "안내도 업로드 완료",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-    );
   }
 
   @override
@@ -101,7 +109,8 @@ class _OwnerState extends State<Owner> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context1) {
+    fetchDirectoryImages();
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -128,12 +137,12 @@ class _OwnerState extends State<Owner> {
                   child: ElevatedButton(
                     onPressed: () {
                       showDialog(
-                        context: context,
+                        context: context1,
                         builder: (BuildContext context) {
                           return AlertDialog(
                             content: SizedBox(
                               width: double.maxFinite,
-                              child: createFloorList(),
+                              child: createFloorList(context),
                             ),
                           );
                         },
@@ -168,7 +177,9 @@ class _OwnerState extends State<Owner> {
                         await picker.pickImage(source: ImageSource.gallery);
                     setState(
                       () {
-                        _image = File(pickedFile!.path);
+                        if (pickedFile != null) {
+                          _image = File(pickedFile.path);
+                        }
                         //선택된 이미지 파일을 _image 변수에 저장
                       },
                     );
@@ -236,7 +247,7 @@ class _OwnerState extends State<Owner> {
               //_image는 Storage에 저장
               String floor = selectedFloor.toString().replaceAll("-", "B");
               log("업로드 하기 버튼 클릭");
-              await uploadFile(floor);
+              uploadFile(floor);
             }
           },
           child: const Row(
@@ -256,11 +267,23 @@ class _OwnerState extends State<Owner> {
     );
   }
 
-  Widget createFloorList() {
+  Widget createFloorList(BuildContext context) {
     List<Widget> floorList = [];
+    Icon check;
     if (basementNumber == null) {
       //지하가 없는 건물
       for (int i = 1; i <= floorNumber; i++) {
+        if (yesimage.contains("$i".padLeft(2, '0').replaceAll("-", "B"))) {
+          check = const Icon(
+            Icons.check_box,
+            color: Colors.green,
+          );
+        } else {
+          check = const Icon(
+            Icons.close,
+            color: Colors.red,
+          );
+        }
         floorList.add(
           ListTile(
             title: Text("$i층"),
@@ -271,12 +294,24 @@ class _OwnerState extends State<Owner> {
               log("$i", name: "check");
               Navigator.pop(context);
             },
+            trailing: check,
           ),
         );
       }
     } else if (basementNumber != null) {
       //null이 아니면 값이 전달받아진거니까 지하가 있는 건물
       for (int i = 1; i <= basementNumber!; i++) {
+        if (yesimage.contains("$i".padLeft(2, '0').replaceAll("-", "B"))) {
+          check = const Icon(
+            Icons.check_box,
+            color: Colors.green,
+          );
+        } else {
+          check = const Icon(
+            Icons.close,
+            color: Colors.red,
+          );
+        }
         floorList.add(
           ListTile(
             title: Text("B$i층"),
@@ -289,10 +324,22 @@ class _OwnerState extends State<Owner> {
               log("-$i", name: "check");
               Navigator.pop(context);
             },
+            trailing: check,
           ),
         );
       }
       for (int i = 1; i <= floorNumber; i++) {
+        if (yesimage.contains("$i".padLeft(2, '0').replaceAll("-", "B"))) {
+          check = const Icon(
+            Icons.check_box,
+            color: Colors.green,
+          );
+        } else {
+          check = const Icon(
+            Icons.close,
+            color: Colors.red,
+          );
+        }
         floorList.add(
           ListTile(
             title: Text("$i층"),
@@ -305,6 +352,7 @@ class _OwnerState extends State<Owner> {
               log("$i", name: "check");
               Navigator.pop(context);
             },
+            trailing: check,
           ),
         );
       }
