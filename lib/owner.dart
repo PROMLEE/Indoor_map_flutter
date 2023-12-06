@@ -67,7 +67,7 @@ class _OwnerState extends State<Owner> {
     if (_image == null) return;
 
     final uri = Uri.parse(
-        'http://$apiUrl:5000/upload/${buildingName}_${floor.padLeft(2, '0')}');
+        'https://$apiUrl/upload/${buildingName}_${floor.padLeft(2, '0')}');
     // 'http://127.0.0.1:5000/upload/${buildingName}_${floor.padLeft(2, '0')}');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
