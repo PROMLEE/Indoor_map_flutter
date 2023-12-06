@@ -101,7 +101,8 @@ class FirstPage extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => OwnerChoiceBuilding(),
+                    builder: (BuildContext context) =>
+                        const OwnerChoiceBuilding(),
                   ),
                 );
               },
