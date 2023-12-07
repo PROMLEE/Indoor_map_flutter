@@ -99,7 +99,7 @@ class _ThirdScreenState extends State<ThirdScreen> {
                 tempData = storeDocument.data()
                     as Map<String, dynamic>; //데이터를 Map 형태로 받음
                 list = tempData.entries.map((entry) {
-                  return Store(entry.value, entry.key);
+                  return Store("${entry.key}: ${entry.value}", entry.key);
                 }).toList();
                 setState(() {});
               },
