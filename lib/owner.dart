@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:http/http.dart' as http;
 import "api_key.dart";
 
@@ -123,6 +124,30 @@ class _OwnerState extends State<Owner> {
                     "$buildingName\n건물\n안내도.",
                     style: const TextStyle(
                       fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 49, 49, 49),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 50,
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 10, top: 15),
+                  child: ElevatedButton(
+                    child: const Icon(Icons.share),
+                    onPressed: () {
+                      Share.share(
+                          "https://promlee.github.io/Indoor_map_react/");
+                    },
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 10, top: 15),
+                  child: const Text(
+                    "건물 내부 채우기\n 링크 공유",
+                    style: TextStyle(
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 49, 49, 49),
                     ),
@@ -247,6 +272,7 @@ class _OwnerState extends State<Owner> {
               //_image는 Storage에 저장
               String floor = selectedFloor.toString().replaceAll("-", "B");
               log("업로드 하기 버튼 클릭");
+              yesimage.add(floor);
               uploadFile(floor);
             }
           },

@@ -2,12 +2,12 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:navermaptest01/map_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:navermaptest01/owner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:permission_handler/permission_handler.dart";
 
 class OwnerChoiceBuilding extends StatefulWidget {
   const OwnerChoiceBuilding({Key? key}) : super(key: key);
@@ -17,11 +17,6 @@ class OwnerChoiceBuilding extends StatefulWidget {
 }
 
 class _OwnerChoiceBuildingState extends State<OwnerChoiceBuilding> {
-  final Completer<NaverMapController> _mapControllerCompleter =
-      Completer<NaverMapController>();
-
-  late NaverMapController _controller;
-
   Future<List<DocumentSnapshot>> getBuildingsData() async {
     final firestore = FirebaseFirestore.instance;
     QuerySnapshot querySnapshot = await firestore.collection('buildings').get();
@@ -40,10 +35,18 @@ class _OwnerChoiceBuildingState extends State<OwnerChoiceBuilding> {
     return marker;
   }
 
+  void permission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted) {
+      await [Permission.locationWhenInUse].request(); // [] 권한배열에 권한을 작성
+    }
+  }
+
   bool isSwitched = false;
 
   @override
   Widget build(BuildContext context) {
+    permission();
     return MaterialApp(
       home: Scaffold(
         body: Column(

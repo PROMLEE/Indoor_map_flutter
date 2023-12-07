@@ -49,6 +49,8 @@ dependencies:
   animated_custom_dropdown: 2.0.0
   url_launcher: ^6.2.1
   flutter_inappwebview: ^5.8.0
+  share_plus:
+  permission_handler:
 
 dev_dependencies:
   flutter_test:

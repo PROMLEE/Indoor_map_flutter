@@ -4,6 +4,7 @@ import 'package:navermaptest01/map_render.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import "package:permission_handler/permission_handler.dart";
 
 class NaverMapApp extends StatefulWidget {
   const NaverMapApp({Key? key}) : super(key: key);
@@ -32,12 +33,20 @@ class _NaverMapAppState extends State<NaverMapApp> {
     return marker;
   }
 
+  void permission() async {
+    var status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted) {
+      await [Permission.locationWhenInUse].request(); // [] 권한배열에 권한을 작성
+    }
+  }
+
 //DB에서 가져온 데이터를 보여줄때는 FutureBuilder나 StreamBuilder를 사용해야함
 //StreamBuilder는 데이터가 지속적으로 변해야할때 사용
 //FutureBuilder는 한번만 가져오면 될때 사용
 //그러면 우리는 좌표만 딱 해서 하면되니까 FutureBuilder사용
   @override
   Widget build(BuildContext context) {
+    permission();
     return MaterialApp(
       home: Scaffold(
         body: Column(
