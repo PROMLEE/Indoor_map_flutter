@@ -220,8 +220,10 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                           "elev": _selectedTransportMethod,
                         });
                         // 길찾기 실행중
+                        // ignore: unused_local_variable
                         var x = await findWay(data);
                         // 종료
+                        // ignore: use_build_context_synchronously
                         Navigator.push(
                           context,
                           MaterialPageRoute(

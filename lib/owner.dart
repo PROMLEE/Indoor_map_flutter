@@ -272,6 +272,7 @@ class _OwnerState extends State<Owner> {
               //_image는 Storage에 저장
               String floor = selectedFloor.toString().replaceAll("-", "B");
               log("업로드 하기 버튼 클릭");
+              yesimage.add(floor);
               uploadFile(floor);
             }
           },
