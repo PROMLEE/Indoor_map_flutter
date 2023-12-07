@@ -143,7 +143,7 @@ class _VisitorChooseEndPointState extends State<VisitorChooseEndPoint> {
                   var tempData = storeDocument.data()
                       as Map<String, dynamic>; // 데이터를 Map 형태로 받음
                   _storeNames = tempData.entries.map((entry) {
-                    return Store(entry.value, entry.key);
+                    return Store("${entry.key}: ${entry.value}", entry.key);
                   }).toList();
                   setState(() {});
                 },
